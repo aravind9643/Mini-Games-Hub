@@ -1,7 +1,10 @@
 import { useState, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useLocation, Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import BottomNav from './BottomNav';
+import SearchOverlay from './SearchOverlay';
+import CategorySheet from './CategorySheet';
 import Footer from './Footer';
 
 function LoadingScreen() {
@@ -14,28 +17,18 @@ function LoadingScreen() {
 }
 
 export default function Layout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const location = useLocation();
+  const favoritesActive = location.pathname === '/' && location.search.includes('sort=favorites');
 
   return (
     <div className="app-layout">
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      
-      {/* Sidebar Backdrop Overlay for Mobile */}
-      {sidebarOpen && (
-        <div 
-          className="sidebar-backdrop" 
-          onClick={() => setSidebarOpen(false)} 
-          style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(15, 23, 42, 0.4)', backdropFilter: 'blur(4px)',
-            webkitBackdropFilter: 'blur(4px)', zIndex: 350
-          }}
-        />
-      )}
-      
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      <Sidebar />
       <div className="main-content">
-        <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
+        <Navbar onSearchClick={() => setSearchOpen(true)} />
         <main className="page-container" id="main-content" tabIndex="-1">
           <Suspense fallback={<LoadingScreen />}>
             <Outlet />
@@ -43,6 +36,15 @@ export default function Layout() {
         </main>
         <Footer />
       </div>
+
+      <BottomNav
+        onCategoriesClick={() => setCategoriesOpen(true)}
+        onSearchClick={() => setSearchOpen(true)}
+        favoritesActive={favoritesActive}
+      />
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <CategorySheet open={categoriesOpen} onClose={() => setCategoriesOpen(false)} />
     </div>
   );
 }

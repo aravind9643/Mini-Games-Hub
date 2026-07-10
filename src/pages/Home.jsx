@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import GameCard from '../components/GameCard';
-import { categories, games } from '../data/games';
+import { categories, categoryColors, games } from '../data/games';
 
 const readList = key => {
   try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
@@ -81,11 +81,12 @@ export default function Home() {
 
         <div className="category-chips" role="group" aria-label="Filter by category">
           {categories.map(item => (
-            <button 
-              type="button" 
-              key={item} 
-              className={category === item ? 'active' : ''} 
-              aria-pressed={category === item} 
+            <button
+              type="button"
+              key={item}
+              className={category === item ? 'active' : ''}
+              style={{ '--chip-color': categoryColors[item] || 'var(--accent-purple)' }}
+              aria-pressed={category === item}
               onClick={() => setCategory(item)}
             >
               {item}

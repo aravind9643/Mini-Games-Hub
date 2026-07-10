@@ -1,5 +1,21 @@
 export const categories = ['All', 'Arcade', 'Puzzle', 'Board', 'Card', 'Word'];
 
+export const categoryColors = {
+  Arcade: '#00e5c7',
+  Puzzle: '#ff5fa2',
+  Board: '#8b7dff',
+  Word: '#33e08a',
+  Card: '#ffb02e'
+};
+
+export const categoryIcons = {
+  Arcade: 'fa-solid fa-joystick',
+  Puzzle: 'fa-solid fa-puzzle-piece',
+  Board: 'fa-solid fa-chess-board',
+  Word: 'fa-solid fa-font',
+  Card: 'fa-solid fa-heart'
+};
+
 export const games = [
   {
     path: '/tic-tac-toe',
