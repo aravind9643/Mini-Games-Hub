@@ -771,6 +771,67 @@ h1, h2, h3, h4, h5, h6 {
   gap: 1rem;
 }
 
+/* Shared in-game (playing state) header used by GameHeader.jsx */
+.cartridge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stat-strip {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.stat-pill-label {
+  color: var(--text-secondary);
+}
+
+.stat-pill-value {
+  font-weight: 800;
+  color: var(--stat-color, var(--text-primary));
+}
+
+/* .game-overlay is the new name for .snake-overlay (kept below as a legacy alias) */
+.game-overlay,
+.snake-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  color: #fff;
+  z-index: 10;
+}
+
+.game-overlay h3,
+.snake-overlay h3 {
+  font-size: 2rem;
+  color: var(--accent-red);
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
 /* ---- Game Play Styles ---- */
 /* 1. Tic Tac Toe */
 .tictactoe-board {

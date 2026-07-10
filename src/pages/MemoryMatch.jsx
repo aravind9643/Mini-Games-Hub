@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 // Themes with 8 pairs of icons
 const THEMES = {
@@ -193,24 +194,18 @@ export default function MemoryMatch() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => { setTimerActive(false); setGameState('lobby'); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            Moves: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{moves}</span>
-          </div>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            Time: <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{formatTime(seconds)}</span>
-          </div>
-        </div>
-
-        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => { setTimerActive(false); setGameState('lobby'); }}
+        stats={[
+          { label: 'Moves', value: moves, color: 'var(--accent-cyan)' },
+          { label: 'Time', value: formatTime(seconds), color: 'var(--accent-pink)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         
@@ -243,7 +238,7 @@ export default function MemoryMatch() {
 
         {/* Win Screen Overlay */}
         {isGameWon && (
-          <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+          <div className="game-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
             <i className="fa-solid fa-trophy" style={{ fontSize: '3rem', color: 'var(--accent-amber)', textShadow: '0 0 15px rgba(245, 158, 11, 0.4)' }} />
             <h2 style={{ color: 'var(--text-primary)' }}>Congratulations!</h2>
             <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>

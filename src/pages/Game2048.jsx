@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 export default function Game2048() {
   const [board, setBoard] = useState(() => createEmptyBoard());
@@ -322,24 +323,18 @@ export default function Game2048() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            Score: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{score}</span>
-          </div>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            Best: <span style={{ fontWeight: 800, color: 'var(--accent-green)' }}>{highScore}</span>
-          </div>
-        </div>
-
-        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => setGameState('lobby')}
+        stats={[
+          { label: 'Score', value: score, color: 'var(--accent-cyan)' },
+          { label: 'Best', value: highScore, color: 'var(--accent-green)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         
@@ -366,7 +361,7 @@ export default function Game2048() {
 
             {/* Game Over Overlay */}
             {gameOver && (
-              <div className="snake-overlay">
+              <div className="game-overlay">
                 <h3>Game Over!</h3>
                 <p>Final Score: {score}</p>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -382,7 +377,7 @@ export default function Game2048() {
 
             {/* Game Won Overlay */}
             {won && !continuePlaying && (
-              <div className="snake-overlay">
+              <div className="game-overlay">
                 <h3 style={{ color: 'var(--accent-green)', textShadow: '0 0 10px rgba(16, 185, 129, 0.5)' }}>You Reached 2048!</h3>
                 <p>Incredible achievement!</p>
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
