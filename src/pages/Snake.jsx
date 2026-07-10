@@ -170,8 +170,16 @@ export default function Snake() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas._dpr !== dpr) {
+      canvas._dpr = dpr;
+      canvas.width = CANVAS_SIZE * dpr;
+      canvas.height = CANVAS_SIZE * dpr;
+    }
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
     // Clear board
     ctx.fillStyle = '#0b0f19';
@@ -298,7 +306,7 @@ export default function Snake() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '1.5rem auto 0', maxWidth: '400px', width: '100%', position: 'relative' }}>
         {/* Canvas Screen */}
         <div className="snake-canvas-container" style={{ position: 'relative' }}>
-          <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+          <canvas ref={canvasRef} />
 
           {/* Overlays (Paused / Game Over) */}
           {isPaused && gameStarted && (

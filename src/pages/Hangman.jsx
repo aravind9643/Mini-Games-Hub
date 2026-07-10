@@ -278,8 +278,8 @@ export default function Hangman() {
             const isIncorrect = isGuessed && !solution.includes(key);
 
             let keyStyle = {
-              width: '30px',
-              height: '34px',
+              width: 'clamp(28px, 8vw, 40px)',
+              height: 'clamp(32px, 9vw, 44px)',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--border-color)',
               background: 'var(--bg-secondary)',

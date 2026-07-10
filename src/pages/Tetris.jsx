@@ -269,6 +269,8 @@ export default function Tetris() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(canvas._dpr || 1, canvas._dpr || 1);
 
     // Game speed tick interval (speeds up as level increases)
     const tickInterval = Math.max(100, 800 - (level - 1) * 80);
@@ -350,13 +352,19 @@ export default function Tetris() {
     };
   }, [gameStarted, gameOver, isPaused, level, softDrop]);
 
-  // Initial canvas draw
+  // Initial canvas draw + DPI-aware backing store sizing
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas._dpr = dpr;
+    canvas.width = COLS * BLOCK_SIZE * dpr;
+    canvas.height = ROWS * BLOCK_SIZE * dpr;
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
     ctx.fillStyle = '#0b0f19';
     ctx.fillRect(0, 0, COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   }, []);
@@ -468,11 +476,11 @@ export default function Tetris() {
         </div>
 
         {/* Board Canvas Screen */}
-        <div 
-          className="snake-canvas-container"
-          style={{ width: `${COLS * BLOCK_SIZE + 6}px`, height: `${ROWS * BLOCK_SIZE + 6}px`, padding: '3px', position: 'relative', marginBottom: '1.5rem' }}
+        <div
+          className="tetris-canvas-container"
+          style={{ '--tetris-aspect': `${COLS * BLOCK_SIZE} / ${ROWS * BLOCK_SIZE}`, position: 'relative', marginBottom: '1.5rem' }}
         >
-          <canvas ref={canvasRef} width={COLS * BLOCK_SIZE} height={ROWS * BLOCK_SIZE} />
+          <canvas ref={canvasRef} />
 
           {/* Overlays */}
           {isPaused && gameStarted && (

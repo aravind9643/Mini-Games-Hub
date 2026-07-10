@@ -79,8 +79,16 @@ export default function FlappyBird() {
 
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas._dpr !== dpr) {
+      canvas._dpr = dpr;
+      canvas.width = CANVAS_SIZE * dpr;
+      canvas.height = CANVAS_SIZE * dpr;
+    }
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
     const updatePhysics = () => {
       // 1. Update Bird position
@@ -232,8 +240,14 @@ export default function FlappyBird() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas._dpr = dpr;
+    canvas.width = CANVAS_SIZE * dpr;
+    canvas.height = CANVAS_SIZE * dpr;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
     ctx.fillStyle = '#0b0f19';
     ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -326,7 +340,7 @@ export default function FlappyBird() {
           onClick={handleCanvasClick}
           style={{ cursor: 'pointer', position: 'relative' }}
         >
-          <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+          <canvas ref={canvasRef} />
 
           {/* Overlays */}
           {isPaused && gameStarted && (

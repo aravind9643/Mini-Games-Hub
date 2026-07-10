@@ -320,9 +320,9 @@ export default function Minesweeper() {
         {/* Minesweeper Grid Board */}
         <div className="minesweeper-wrapper" style={{ overflow: 'auto', maxWidth: '100%' }}>
           <div className="minesweeper-board-outer" style={{ position: 'relative' }}>
-            <div 
-              className="minesweeper-grid" 
-              style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+            <div
+              className="minesweeper-grid"
+              style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, '--ms-cols': cols }}
             >
               {grid.map((row) =>
                 row.map((cell) => {

@@ -73,8 +73,16 @@ export default function NeonPong() {
 
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas._dpr !== dpr) {
+      canvas._dpr = dpr;
+      canvas.width = CANVAS_WIDTH * dpr;
+      canvas.height = CANVAS_HEIGHT * dpr;
+    }
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
     const updatePhysics = () => {
       // 1. Move Player paddle
@@ -216,8 +224,14 @@ export default function NeonPong() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas._dpr = dpr;
+    canvas.width = CANVAS_WIDTH * dpr;
+    canvas.height = CANVAS_HEIGHT * dpr;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
     ctx.fillStyle = '#0b0f19';
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -319,7 +333,7 @@ export default function NeonPong() {
           onTouchMove={handleTouchMove}
           style={{ width: '100%', maxWidth: '400px', aspectRatio: '4/3', overflow: 'hidden', position: 'relative' }}
         >
-          <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{ display: 'block', width: '100%', height: '100%' }} />
+          <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 
           {/* Overlays */}
           {isPaused && gameStarted && (
