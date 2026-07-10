@@ -901,6 +901,84 @@ h1, h2, h3, h4, h5, h6 {
   gap: 1rem;
 }
 
+/* ---- "Cartridge" in-game header (unified across all games) ---- */
+.cartridge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-lg);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-border);
+  margin-bottom: 1.5rem;
+}
+
+.cartridge-header .btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+}
+
+.stat-strip {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 58px;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+}
+
+.stat-pill .stat-pill-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.stat-pill .stat-pill-value {
+  font-family: 'Outfit', sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--stat-color, var(--text-primary));
+}
+
+/* ---- Shared win/lose/pause overlay (formerly "snake-overlay") ---- */
+.game-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(4, 3, 10, 0.78);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  color: #fff;
+  z-index: 10;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.game-overlay h2, .game-overlay h3 {
+  font-size: 1.75rem;
+  text-shadow: 0 0 16px currentColor;
+}
+
 /* ---- Game Play Styles ---- */
 /* 1. Tic Tac Toe */
 .tictactoe-board {
@@ -1013,14 +1091,16 @@ h1, h2, h3, h4, h5, h6 {
   aspect-ratio: 1;
 }
 
+/* .snake-overlay is an alias of .game-overlay, kept for pages not yet migrated */
 .snake-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(4px);
+  background: rgba(4, 3, 10, 0.78);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1028,6 +1108,8 @@ h1, h2, h3, h4, h5, h6 {
   gap: 1.5rem;
   color: #fff;
   z-index: 10;
+  text-align: center;
+  padding: 1.5rem;
 }
 
 .snake-overlay h3 {
