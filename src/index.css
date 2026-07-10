@@ -873,6 +873,36 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
+.cartridge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stat-strip {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.stat-pill-value {
+  font-weight: 800;
+  color: var(--stat-color, var(--text-primary));
+}
+
 .game-meta-tags {
   display: flex;
   gap: 0.5rem;

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const CHOICES = [
   { id: 'rock', name: 'Rock', icon: '🪨', color: '#ef4444' }, // Red
@@ -119,25 +120,18 @@ export default function RPSLS() {
 
   return (
     <div className="game-container">
-      {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            You: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{scores.player}</span>
-          </div>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            CPU: <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{scores.computer}</span>
-          </div>
-        </div>
-
-        <button className="btn btn-secondary" onClick={resetGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Reset
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => setGameState('lobby')}
+        stats={[
+          { label: 'You', value: scores.player, color: 'var(--accent-cyan)' },
+          { label: 'CPU', value: scores.computer, color: 'var(--accent-pink)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={resetGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Reset
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative', gap: '1.5rem' }}>
         
