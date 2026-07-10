@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const CANVAS_SIZE = 400;
 const GRAVITY = 0.45;
@@ -303,29 +304,21 @@ export default function FlappyBird() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button 
-          className="btn btn-secondary" 
-          onClick={() => { 
-            if (frameId.current) cancelAnimationFrame(frameId.current);
-            setGameStarted(false); 
-            setGameState('lobby'); 
-          }} 
-          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-        >
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
-          Score: {score}
-        </div>
-
-        {gameStarted && !gameOver && (
+      <GameHeader
+        onMenu={() => {
+          if (frameId.current) cancelAnimationFrame(frameId.current);
+          setGameStarted(false);
+          setGameState('lobby');
+        }}
+        stats={[
+          { label: 'Score', value: score, color: 'var(--accent-cyan)' }
+        ]}
+        actions={gameStarted && !gameOver && (
           <button className="btn btn-secondary" onClick={() => setIsPaused(!isPaused)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
             <i className={isPaused ? "fa-solid fa-play" : "fa-solid fa-pause"}></i> {isPaused ? 'Resume' : 'Pause'}
           </button>
         )}
-      </div>
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '400px', width: '100%', position: 'relative' }}>
         {/* Canvas Screen */}
@@ -338,7 +331,7 @@ export default function FlappyBird() {
 
           {/* Overlays */}
           {isPaused && gameStarted && (
-            <div className="snake-overlay">
+            <div className="game-overlay">
               <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
               <h2>Game Paused</h2>
               <button className="btn btn-primary" onClick={(e) => { e.stopPropagation(); setIsPaused(false); }}>
@@ -348,7 +341,7 @@ export default function FlappyBird() {
           )}
 
           {gameOver && (
-            <div className="snake-overlay">
+            <div className="game-overlay">
               <h3 style={{ color: 'var(--accent-red)' }}>Game Over</h3>
               <p>Score: {score}</p>
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>

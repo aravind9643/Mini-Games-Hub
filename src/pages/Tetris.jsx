@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const COLS = 10;
 const ROWS = 20;
@@ -411,31 +412,23 @@ export default function Tetris() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button 
-          className="btn btn-secondary" 
-          onClick={() => { 
-            if (frameId.current) cancelAnimationFrame(frameId.current);
-            setGameStarted(false); 
-            setGameState('lobby'); 
-          }} 
-          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-        >
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)' }}>S:{score}</span>
-          <span style={{ fontSize: '0.85rem', color: 'var(--accent-green)' }}>L:{lines}</span>
-          <span style={{ fontSize: '0.85rem', color: 'var(--accent-amber)' }}>Lv:{level}</span>
-        </div>
-
-        {gameStarted && !gameOver && (
+      <GameHeader
+        onMenu={() => {
+          if (frameId.current) cancelAnimationFrame(frameId.current);
+          setGameStarted(false);
+          setGameState('lobby');
+        }}
+        stats={[
+          { label: 'S', value: score, color: 'var(--accent-cyan)' },
+          { label: 'L', value: lines, color: 'var(--accent-green)' },
+          { label: 'Lv', value: level, color: 'var(--accent-amber)' }
+        ]}
+        actions={gameStarted && !gameOver && (
           <button className="btn btn-secondary" onClick={() => setIsPaused(!isPaused)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
             <i className={isPaused ? "fa-solid fa-play" : "fa-solid fa-pause"}></i> {isPaused ? 'Resume' : 'Pause'}
           </button>
         )}
-      </div>
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '1.5rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         
@@ -478,7 +471,7 @@ export default function Tetris() {
 
           {/* Overlays */}
           {isPaused && gameStarted && (
-            <div className="snake-overlay">
+            <div className="game-overlay">
               <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
               <h2>Game Paused</h2>
               <button className="btn btn-primary" onClick={() => setIsPaused(false)}>
@@ -488,7 +481,7 @@ export default function Tetris() {
           )}
 
           {gameOver && (
-            <div className="snake-overlay">
+            <div className="game-overlay">
               <h3 style={{ color: 'var(--accent-red)' }}>Game Over</h3>
               <p>Score: {score}</p>
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>

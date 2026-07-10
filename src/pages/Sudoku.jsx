@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const BASE_GRID = [
   [5, 3, 4, 6, 7, 8, 9, 1, 2],
@@ -231,19 +232,17 @@ export default function Sudoku() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
-          Mode: <span style={{ color: 'var(--accent-cyan)' }}>{difficulty}</span>
-        </div>
-
-        <button className="btn btn-secondary" onClick={() => initGame(difficulty)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => setGameState('lobby')}
+        stats={[
+          { label: 'Mode', value: difficulty, color: 'var(--accent-cyan)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={() => initGame(difficulty)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '1.5rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         {/* Note Mode Toggler */}
@@ -343,7 +342,7 @@ export default function Sudoku() {
 
             {/* Victory Overlay */}
             {won && (
-              <div className="snake-overlay" style={{ borderRadius: 'var(--radius-md)' }}>
+              <div className="game-overlay" style={{ borderRadius: 'var(--radius-md)' }}>
                 <i className="fa-solid fa-medal" style={{ fontSize: '3rem', color: 'var(--accent-amber)' }}></i>
                 <h2 style={{ color: 'var(--accent-green)' }}>Board Solved!</h2>
                 <p>Congratulations, you completed the puzzle!</p>
