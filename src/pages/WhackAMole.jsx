@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const GAME_DURATION = 30; // seconds
 const INITIAL_POP_TIME = 950; // ms
@@ -144,34 +145,23 @@ export default function WhackAMole() {
 
   return (
     <div className="game-container">
-      {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button 
-          className="btn btn-secondary" 
-          onClick={() => { 
-            if (timerRef.current) clearInterval(timerRef.current);
-            if (moleTimerRef.current) clearTimeout(moleTimerRef.current);
-            setGameStarted(false); 
-            setGameState('lobby'); 
-          }} 
-          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-        >
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            Hits: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{score}</span>
-          </div>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            Time: <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{timeLeft}s</span>
-          </div>
-        </div>
-
-        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => {
+          if (timerRef.current) clearInterval(timerRef.current);
+          if (moleTimerRef.current) clearTimeout(moleTimerRef.current);
+          setGameStarted(false);
+          setGameState('lobby');
+        }}
+        stats={[
+          { label: 'Hits', value: score, color: 'var(--accent-cyan)' },
+          { label: 'Time', value: `${timeLeft}s`, color: 'var(--accent-pink)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         
@@ -234,7 +224,7 @@ export default function WhackAMole() {
 
           {/* Overlays */}
           {gameOver && (
-            <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+            <div className="game-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
               <i className="fa-solid fa-hourglass-end" style={{ fontSize: '3rem', color: 'var(--accent-red)' }} />
               <h2 style={{ color: 'var(--accent-red)' }}>Time's Up!</h2>
               <p>Final Score: <strong>{score} hits</strong></p>

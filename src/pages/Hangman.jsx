@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const WORDS = [
   'DEVELOPER', 'INTERFACE', 'CODEBASE', 'GRADIENT', 'RESPONSIVE', 
@@ -166,20 +167,17 @@ export default function Hangman() {
 
   return (
     <div className="game-container">
-      {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
-          Streak: {streak} 🔥
-        </div>
-
-        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => setGameState('lobby')}
+        stats={[
+          { label: 'Streak', value: <>{streak} 🔥</>, color: 'var(--accent-cyan)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         
@@ -198,7 +196,7 @@ export default function Hangman() {
 
           {/* Win/Loss Game Over Screen Overlay */}
           {gameOver && (
-            <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+            <div className="game-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
               {won ? (
                 <>
                   <i className="fa-solid fa-face-smile-wink" style={{ fontSize: '3rem', color: 'var(--accent-green)' }} />

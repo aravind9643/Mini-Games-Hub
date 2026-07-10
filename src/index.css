@@ -743,6 +743,36 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
+.cartridge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.stat-strip {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.stat-pill-value {
+  font-weight: 800;
+  color: var(--stat-color, var(--text-primary));
+}
+
 .game-meta-tags {
   display: flex;
   gap: 0.5rem;
@@ -901,6 +931,30 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .snake-overlay h3 {
+  font-size: 2rem;
+  color: var(--accent-red);
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* .game-overlay is the shared, correctly-named alias for the legacy .snake-overlay class */
+.game-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  color: #fff;
+  z-index: 10;
+}
+
+.game-overlay h3 {
   font-size: 2rem;
   color: var(--accent-red);
   text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
