@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 300;
@@ -295,32 +296,22 @@ export default function NeonPong() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button 
-          className="btn btn-secondary" 
-          onClick={() => { 
-            if (frameId.current) cancelAnimationFrame(frameId.current);
-            setGameStarted(false); 
-            setGameState('lobby'); 
-          }} 
-          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-        >
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            You: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{score.player}</span>
-          </div>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            CPU: <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{score.computer}</span>
-          </div>
-        </div>
-
-        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => {
+          if (frameId.current) cancelAnimationFrame(frameId.current);
+          setGameStarted(false);
+          setGameState('lobby');
+        }}
+        stats={[
+          { label: 'You', value: score.player, color: 'var(--accent-cyan)' },
+          { label: 'CPU', value: score.computer, color: 'var(--accent-pink)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '400px', width: '100%', position: 'relative' }}>
         
@@ -334,7 +325,7 @@ export default function NeonPong() {
 
           {/* Overlays */}
           {isPaused && gameStarted && (
-            <div className="snake-overlay">
+            <div className="game-overlay">
               <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
               <h2>Game Paused</h2>
               <button className="btn btn-primary" onClick={() => setIsPaused(false)}>
@@ -344,7 +335,7 @@ export default function NeonPong() {
           )}
 
           {gameOver && (
-            <div className="snake-overlay">
+            <div className="game-overlay">
               <h3 style={{ color: winner === 'Player' ? 'var(--accent-green)' : 'var(--accent-red)' }}>
                 {winner === 'Player' ? '🏆 You Won!' : '💀 CPU Won!'}
               </h3>

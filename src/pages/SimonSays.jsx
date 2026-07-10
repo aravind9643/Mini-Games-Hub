@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 // Frequencies for Simon Says colors
 const FREQUENCIES = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
@@ -166,19 +167,17 @@ export default function SimonSays() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => { setGameStarted(false); setGameState('lobby'); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
-          Level: {score}
-        </div>
-
-        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => { setGameStarted(false); setGameState('lobby'); }}
+        stats={[
+          { label: 'Level', value: score, color: 'var(--accent-cyan)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         
@@ -294,7 +293,7 @@ export default function SimonSays() {
 
           {/* Game Over Overlay */}
           {gameOver && (
-            <div className="snake-overlay" style={{ borderRadius: '50%', padding: '2.5rem 1rem' }}>
+            <div className="game-overlay" style={{ borderRadius: '50%', padding: '2.5rem 1rem' }}>
               <i className="fa-solid fa-triangle-exclamation" style={{ fontSize: '2.2rem', color: 'var(--accent-red)' }}></i>
               <h3 style={{ fontSize: '1.1rem', margin: '0.4rem 0' }}>Wrong Color</h3>
               <p style={{ fontSize: '0.8rem', textAlign: 'center' }}>Reached Level: {score}</p>
