@@ -18,6 +18,7 @@ export default function FlappyBird() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Use refs to track game loop physics variables without re-triggering effects
   const birdY = useRef(200);
@@ -36,6 +37,7 @@ export default function FlappyBird() {
     setGameOver(false);
     setGameStarted(true);
     setIsPaused(false);
+    setGameState('playing');
   };
 
   // Bird jump function
@@ -245,96 +247,112 @@ export default function FlappyBird() {
     ctx.fill();
   }, []);
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Neon Flappy</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Arcade</span>
-            <span className="meta-tag difficulty">Medium</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Neon Flappy</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Arcade</span>
+              <span className="meta-tag difficulty">Medium</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          {gameStarted && !gameOver && (
-            <button className="btn btn-secondary" onClick={() => setIsPaused(!isPaused)}>
-              <i className={isPaused ? "fa-solid fa-play" : "fa-solid fa-pause"}></i> {isPaused ? 'Resume' : 'Pause'}
-            </button>
-          )}
-          <button className="btn btn-primary" onClick={initGame}>
-            {gameOver ? 'Play Again' : 'Restart Game'}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Press Spacebar, Arrow Up, or W to fly upwards. Tap or Click directly on the game screen to flap. Navigate through the narrow gaps between glowing column obstacles.
+            </p>
+          </div>
+
+          {/* Scores */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+            <div className="snake-stat-box">
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>High Score</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>{highScore} pts</div>
+            </div>
+          </div>
+
+          <button className="btn btn-primary" onClick={initGame} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Game Stats */}
-        <div style={{
-          flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Info</h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', textAlign: 'center' }}>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Score</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{score}</div>
-            </div>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>High Score</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-green)' }}>{highScore}</div>
-            </div>
-          </div>
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>How to Play:</h4>
-            <p>⌨️ Press **Spacebar**, **Arrow Up**, or **W** to flap and fly upwards.</p>
-            <p>📱 Tap or Click directly on the game screen to flap.</p>
-            <p>🚧 Avoid crashing into the glowing neon columns or the boundaries!</p>
-          </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button 
+          className="btn btn-secondary" 
+          onClick={() => { 
+            if (frameId.current) cancelAnimationFrame(frameId.current);
+            setGameStarted(false); 
+            setGameState('lobby'); 
+          }} 
+          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
+          Score: {score}
         </div>
 
+        {gameStarted && !gameOver && (
+          <button className="btn btn-secondary" onClick={() => setIsPaused(!isPaused)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className={isPaused ? "fa-solid fa-play" : "fa-solid fa-pause"}></i> {isPaused ? 'Resume' : 'Pause'}
+          </button>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '400px', width: '100%', position: 'relative' }}>
         {/* Canvas Screen */}
-        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <div 
-            className="snake-canvas-container"
-            onClick={handleCanvasClick}
-            style={{ cursor: 'pointer' }}
-          >
-            <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
+        <div 
+          className="snake-canvas-container"
+          onClick={handleCanvasClick}
+          style={{ cursor: 'pointer', position: 'relative' }}
+        >
+          <canvas ref={canvasRef} width={CANVAS_SIZE} height={CANVAS_SIZE} />
 
-            {/* Overlays */}
-            {!gameStarted && (
-              <div className="snake-overlay">
-                <i className="fa-solid fa-dove" style={{ fontSize: '3rem', color: 'var(--accent-amber)', textShadow: '0 0 15px rgba(245, 158, 11, 0.4)' }}></i>
-                <h2>Neon Flappy</h2>
-                <button className="btn btn-primary" onClick={initGame}>
-                  Start Game
-                </button>
-              </div>
-            )}
+          {/* Overlays */}
+          {isPaused && gameStarted && (
+            <div className="snake-overlay">
+              <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
+              <h2>Game Paused</h2>
+              <button className="btn btn-primary" onClick={(e) => { e.stopPropagation(); setIsPaused(false); }}>
+                Resume Game
+              </button>
+            </div>
+          )}
 
-            {isPaused && gameStarted && (
-              <div className="snake-overlay">
-                <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
-                <h2>Game Paused</h2>
-                <button className="btn btn-primary" onClick={() => setIsPaused(false)}>
-                  Resume Game
-                </button>
-              </div>
-            )}
-
-            {gameOver && (
-              <div className="snake-overlay">
-                <h3 style={{ color: 'var(--accent-red)' }}>Game Over!</h3>
-                <p>Final Score: {score}</p>
-                <button className="btn btn-primary" onClick={initGame}>
+          {gameOver && (
+            <div className="snake-overlay">
+              <h3 style={{ color: 'var(--accent-red)' }}>Game Over</h3>
+              <p>Score: {score}</p>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button className="btn btn-primary" onClick={(e) => { e.stopPropagation(); initGame(); }}>
                   Play Again
                 </button>
+                <button className="btn btn-secondary" onClick={(e) => { e.stopPropagation(); setGameStarted(false); setGameState('lobby'); }}>
+                  Lobby
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -16,6 +16,7 @@ export default function Hangman() {
   const [streak, setStreak] = useState(() => {
     return parseInt(localStorage.getItem('games-hangman-streak') || '0', 10);
   });
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   const initGame = useCallback(() => {
     const word = WORDS[Math.floor(Math.random() * WORDS.length)];
@@ -24,11 +25,8 @@ export default function Hangman() {
     setErrorCount(0);
     setGameOver(false);
     setWon(false);
+    setGameState('playing');
   }, []);
-
-  useEffect(() => {
-    initGame();
-  }, [initGame]);
 
   const handleGuess = useCallback((letter) => {
     if (guessedLetters.includes(letter) || gameOver) return;
@@ -127,169 +125,197 @@ export default function Hangman() {
 
   const keyboardKeys = 'QWERTYUIOPASDFGHJKLZXCVBNM'.split('');
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>SVG Hangman</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Word</span>
-            <span className="meta-tag difficulty">Medium</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>SVG Hangman</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Word</span>
+              <span className="meta-tag difficulty">Medium</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          <button className="btn btn-primary" onClick={initGame}>
-            {gameOver ? 'Play Again' : 'Restart'}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Guess the hidden word by choosing letters. Each incorrect guess draws a section of the hangman figure. Save the stick man before making 6 mistakes to preserve your streak!
+            </p>
+          </div>
+
+          {/* Scores */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+            <div className="snake-stat-box">
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Current Streak</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{streak} 🔥</div>
+            </div>
+          </div>
+
+          <button className="btn btn-primary" onClick={initGame} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Game Stats & Streak */}
-        <div style={{
-          flex: '1 1 250px', maxWidth: '300px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Streak Info</h3>
-          
-          <div className="snake-stat-box" style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Current Streak</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{streak} 🔥</div>
-          </div>
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>How to play:</h4>
-            <p>1. Type letters using your keyboard or the on-screen keyboard.</p>
-            <p>2. Try to fill in the blanks of the secret developer word.</p>
-            <p>3. If you make 6 wrong guesses, the hangman is complete!</p>
-          </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
+          Streak: {streak} 🔥
         </div>
 
-        {/* Gallows and Keyboard */}
-        <div style={{ flex: '1 1 300px', maxWidth: '440px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
-          {/* Hangman Gallows Screen */}
-          <div style={{
-            width: '100%',
-            height: '220px',
-            background: 'var(--bg-secondary)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '1rem',
-            position: 'relative'
-          }}>
-            {renderHangmanSVG()}
+        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
 
-            {/* Win/Loss Game Over Screen Overlay */}
-            {gameOver && (
-              <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
-                {won ? (
-                  <>
-                    <i className="fa-solid fa-face-smile-wink" style={{ fontSize: '3rem', color: 'var(--accent-green)' }} />
-                    <h2 style={{ color: 'var(--accent-green)' }}>You Survived!</h2>
-                    <p>Streak increases to {streak}!</p>
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-skull-crossbones" style={{ fontSize: '3rem', color: 'var(--accent-red)' }} />
-                    <h2 style={{ color: 'var(--accent-red)' }}>Game Over</h2>
-                    <p>The secret word was: <strong>{solution}</strong></p>
-                  </>
-                )}
-                <button className="btn btn-primary" onClick={initGame} style={{ marginTop: '0.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
+        
+        {/* Hangman Gallows Screen */}
+        <div style={{
+          width: '100%',
+          height: '200px',
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-color)',
+          borderRadius: 'var(--radius-lg)',
+          padding: '1rem',
+          position: 'relative',
+          marginBottom: '1.5rem'
+        }}>
+          {renderHangmanSVG()}
+
+          {/* Win/Loss Game Over Screen Overlay */}
+          {gameOver && (
+            <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+              {won ? (
+                <>
+                  <i className="fa-solid fa-face-smile-wink" style={{ fontSize: '3rem', color: 'var(--accent-green)' }} />
+                  <h2 style={{ color: 'var(--accent-green)' }}>You Survived!</h2>
+                  <p>Streak: {streak} 🔥</p>
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-skull-crossbones" style={{ fontSize: '3rem', color: 'var(--accent-red)' }} />
+                  <h2 style={{ color: 'var(--accent-red)' }}>Game Over</h2>
+                  <p style={{ textAlign: 'center' }}>Secret word: <strong>{solution}</strong></p>
+                </>
+              )}
+              <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+                <button className="btn btn-primary" onClick={initGame} style={{ flex: 1 }}>
                   Play Again
                 </button>
-              </div>
-            )}
-          </div>
-
-          {/* Solution Word Blank Blanks */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '8px',
-            flexWrap: 'wrap',
-            margin: '0.5rem 0',
-            width: '100%'
-          }}>
-            {solution.split('').map((char, idx) => {
-              const revealed = guessedLetters.includes(char) || gameOver;
-              
-              return (
-                <div 
-                  key={idx}
-                  style={{
-                    width: '26px',
-                    height: '35px',
-                    borderBottom: revealed ? 'none' : '3px solid var(--text-secondary)',
-                    display: 'grid',
-                    placeContent: 'center',
-                    fontSize: '1.4rem',
-                    fontWeight: 800,
-                    color: revealed && !guessedLetters.includes(char) ? 'var(--accent-red)' : 'var(--text-primary)',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  {revealed ? char : ''}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Keyboard Letters selection */}
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: '6px',
-            width: '100%',
-            padding: '0 0.5rem'
-          }}>
-            {keyboardKeys.map(key => {
-              const isGuessed = guessedLetters.includes(key);
-              const isCorrect = isGuessed && solution.includes(key);
-              const isIncorrect = isGuessed && !solution.includes(key);
-
-              let keyStyle = {
-                width: '32px',
-                height: '36px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-secondary)',
-                color: 'var(--text-primary)',
-                fontSize: '0.9rem',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'grid',
-                placeContent: 'center',
-                transition: 'all 0.12s ease',
-                userSelect: 'none'
-              };
-
-              if (isCorrect) {
-                keyStyle.background = 'var(--accent-green)';
-                keyStyle.borderColor = 'var(--accent-green)';
-                keyStyle.color = '#fff';
-                keyStyle.cursor = 'not-allowed';
-              } else if (isIncorrect) {
-                keyStyle.background = 'rgba(255, 255, 255, 0.03)';
-                keyStyle.borderColor = 'rgba(255, 255, 255, 0.05)';
-                keyStyle.color = 'var(--text-secondary)';
-                keyStyle.cursor = 'not-allowed';
-              }
-
-              return (
-                <button 
-                  key={key} 
-                  style={keyStyle}
-                  onClick={() => handleGuess(key)}
-                  disabled={isGuessed}
-                >
-                  {key}
+                <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ flex: 1 }}>
+                  Lobby
                 </button>
-              );
-            })}
-          </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Solution Word Blank Blanks */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '8px',
+          flexWrap: 'wrap',
+          marginBottom: '1.5rem',
+          width: '100%'
+        }}>
+          {solution.split('').map((char, idx) => {
+            const revealed = guessedLetters.includes(char) || gameOver;
+            
+            return (
+              <div 
+                key={idx}
+                style={{
+                  width: '24px',
+                  height: '32px',
+                  borderBottom: revealed ? 'none' : '3px solid var(--text-secondary)',
+                  display: 'grid',
+                  placeContent: 'center',
+                  fontSize: '1.3rem',
+                  fontWeight: 800,
+                  color: revealed && !guessedLetters.includes(char) ? 'var(--accent-red)' : 'var(--text-primary)',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {revealed ? char : ''}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Keyboard Letters selection */}
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '6px',
+          width: '100%',
+          padding: '0 0.5rem'
+        }}>
+          {keyboardKeys.map(key => {
+            const isGuessed = guessedLetters.includes(key);
+            const isCorrect = isGuessed && solution.includes(key);
+            const isIncorrect = isGuessed && !solution.includes(key);
+
+            let keyStyle = {
+              width: '30px',
+              height: '34px',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'grid',
+              placeContent: 'center',
+              transition: 'all 0.12s ease',
+              userSelect: 'none'
+            };
+
+            if (isCorrect) {
+              keyStyle.background = 'var(--accent-green)';
+              keyStyle.borderColor = 'var(--accent-green)';
+              keyStyle.color = '#fff';
+              keyStyle.cursor = 'not-allowed';
+            } else if (isIncorrect) {
+              keyStyle.background = 'rgba(255, 255, 255, 0.03)';
+              keyStyle.borderColor = 'rgba(255, 255, 255, 0.05)';
+              keyStyle.color = 'var(--text-secondary)';
+              keyStyle.cursor = 'not-allowed';
+            }
+
+            return (
+              <button 
+                key={key} 
+                style={keyStyle}
+                onClick={() => handleGuess(key)}
+                disabled={isGuessed}
+              >
+                {key}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

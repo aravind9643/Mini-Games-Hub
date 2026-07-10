@@ -22,6 +22,7 @@ export default function Sudoku() {
   const [difficulty, setDifficulty] = useState('Easy');
   const [errors, setErrors] = useState([]); // list of 'r-c'
   const [won, setWon] = useState(false);
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Generate randomized puzzle
   const initGame = useCallback((diff = difficulty) => {
@@ -75,11 +76,8 @@ export default function Sudoku() {
     setNoteMode(false);
     setErrors([]);
     setWon(false);
+    setGameState('playing');
   }, [difficulty]);
-
-  useEffect(() => {
-    initGame();
-  }, [initGame]);
 
   // Insert/delete number handler
   const handleNumberInput = useCallback((num) => {
@@ -183,70 +181,93 @@ export default function Sudoku() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedCell, handleNumberInput]);
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Sudoku Board</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Board</span>
-            <span className="meta-tag difficulty">{difficulty}</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Sudoku Board</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Board</span>
+              <span className="meta-tag difficulty">Adaptive</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          <select 
-            className="btn btn-secondary"
-            value={difficulty}
-            onChange={(e) => {
-              setDifficulty(e.target.value);
-              initGame(e.target.value);
-            }}
-            style={{ padding: '0.45rem 1rem', cursor: 'pointer', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', outline: 'none' }}
-          >
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-          </select>
-          <button className="btn btn-primary" onClick={() => initGame(difficulty)}>
-            Restart
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Fill the 9x9 grid so that every row, column, and 3x3 block contains digits from 1 to 9 without repetition. Tap cells to highlight them, toggle Note Mode to scribble notes, and enter numbers.
+            </p>
+          </div>
+
+          {/* Difficulty Preset */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Difficulty</h3>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {['Easy', 'Medium', 'Hard'].map(diff => (
+                <button 
+                  key={diff}
+                  className={`btn ${difficulty === diff ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                  onClick={() => setDifficulty(diff)}
+                >
+                  {diff}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button className="btn btn-primary" onClick={() => initGame(difficulty)} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Play Details panel */}
-        <div style={{
-          flex: '1 1 250px', maxWidth: '300px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Panel</h3>
-          
-          <button 
-            className={`btn ${noteMode ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setNoteMode(!noteMode)}
-            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-          >
-            <i className="fa-solid fa-pencil" /> Note Mode: {noteMode ? 'ON' : 'OFF'}
-          </button>
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>How to play:</h4>
-            <p>1. Select any grid cell.</p>
-            <p>2. Press **Keyboard Numbers (1-9)** or use the keypad to write.</p>
-            <p>3. Toggle **Note Mode** to write small pencil numbers.</p>
-            <p>4. Red cells highlight incorrect duplicate values.</p>
-          </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+          Mode: <span style={{ color: 'var(--accent-cyan)' }}>{difficulty}</span>
         </div>
 
-        {/* Sudoku Grid and Keypad */}
-        <div style={{ flex: '1 1 300px', maxWidth: '440px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
-          {/* Sudoku Board Grid */}
+        <button className="btn btn-secondary" onClick={() => initGame(difficulty)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '1.5rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
+        {/* Note Mode Toggler */}
+        <button 
+          className={`btn ${noteMode ? 'btn-primary' : 'btn-secondary'}`}
+          style={{ width: '100%', maxWidth: '280px', padding: '0.4rem 1rem', gap: '0.5rem', fontSize: '0.85rem', marginBottom: '1.5rem' }}
+          onClick={() => setNoteMode(!noteMode)}
+        >
+          <i className="fa-solid fa-pencil"></i> {noteMode ? 'Pencil Notes: ON' : 'Pencil Notes: OFF'}
+        </button>
+
+        {/* Sudoku Board Grid */}
+        <div style={{ width: '100%', maxWidth: '360px', marginBottom: '1.5rem' }}>
           <div style={{
-            display: 'grid',
-            gridTemplateRows: 'repeat(9, 1fr)',
             width: '100%',
             aspectRatio: '1',
+            display: 'grid',
+            gridTemplateRows: 'repeat(9, 1fr)',
             background: 'var(--bg-primary)',
             border: '2px solid var(--border-color)',
             borderRadius: 'var(--radius-md)',
@@ -332,33 +353,38 @@ export default function Sudoku() {
                 <i className="fa-solid fa-medal" style={{ fontSize: '3rem', color: 'var(--accent-amber)' }}></i>
                 <h2 style={{ color: 'var(--accent-green)' }}>Board Solved!</h2>
                 <p>Congratulations, you completed the puzzle!</p>
-                <button className="btn btn-primary" onClick={() => initGame(difficulty)}>
-                  Play Again
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+                  <button className="btn btn-primary" onClick={() => initGame(difficulty)} style={{ flex: 1 }}>
+                    Play Again
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ flex: 1 }}>
+                    Lobby
+                  </button>
+                </div>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Number Keyboard Pad */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', width: '100%' }}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
-              <button 
-                key={num}
-                className="btn btn-secondary"
-                onClick={() => handleNumberInput(num)}
-                style={{ height: '45px', fontSize: '1.2rem', fontWeight: 800 }}
-              >
-                {num}
-              </button>
-            ))}
+        {/* Number Keyboard Pad */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px', width: '100%' }}>
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
             <button 
+              key={num}
               className="btn btn-secondary"
-              onClick={() => handleNumberInput(0)}
-              style={{ height: '45px', fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-red)' }}
+              onClick={() => handleNumberInput(num)}
+              style={{ height: '45px', fontSize: '1.2rem', fontWeight: 800 }}
             >
-              Clear
+              {num}
             </button>
-          </div>
+          ))}
+          <button 
+            className="btn btn-secondary"
+            onClick={() => handleNumberInput(0)}
+            style={{ height: '45px', fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-red)' }}
+          >
+            Clear
+          </button>
         </div>
       </div>
     </div>

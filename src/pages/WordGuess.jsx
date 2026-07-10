@@ -17,6 +17,7 @@ export default function WordGuess() {
   const [streak, setStreak] = useState(() => {
     return parseInt(localStorage.getItem('games-wordguess-streak') || '0', 10);
   });
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Pick a random solution word
   const initGame = useCallback(() => {
@@ -27,12 +28,8 @@ export default function WordGuess() {
     setCurrentRow(0);
     setGameOver(false);
     setWon(false);
+    setGameState('playing');
   }, []);
-
-  // Run on mount
-  useEffect(() => {
-    initGame();
-  }, [initGame]);
 
   const handleKeyPress = useCallback((key) => {
     if (gameOver) return;
@@ -124,183 +121,211 @@ export default function WordGuess() {
     ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACK']
   ];
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Word Guess</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Word</span>
-            <span className="meta-tag difficulty">Medium</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Word Guess</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Word</span>
+              <span className="meta-tag difficulty">Medium</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          <button className="btn btn-primary" onClick={initGame}>
-            {gameOver ? 'Play Again' : 'Restart Game'}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Guess the hidden 5-letter word in 6 tries. The color of the tiles will change to show how close your guess was to the word:
+            </p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+              🟩 Green: Letter is in the correct spot.<br />
+              🟨 Amber: Letter is in the word but wrong spot.<br />
+              ⬜ Dark: Letter is not in the word.
+            </p>
+          </div>
+
+          {/* Scores */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+            <div className="snake-stat-box">
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Current Streak</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>{streak} 🔥</div>
+            </div>
+          </div>
+
+          <button className="btn btn-primary" onClick={initGame} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Game Stats */}
-        <div style={{
-          flex: '1 1 250px', maxWidth: '300px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Streak Info</h3>
-          
-          <div className="snake-stat-box" style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Current Winning Streak</div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>{streak} 🔥</div>
-          </div>
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Clue Colors:</h4>
-            <p>🟩 **Green**: Letter is correct and in the correct spot.</p>
-            <p>🟨 **Amber**: Letter is in the word but at a different spot.</p>
-            <p>⬛ **Muted**: Letter is not in the hidden word.</p>
-          </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-green)' }}>
+          Streak: {streak} 🔥
         </div>
 
-        {/* Guesses Board and Keyboard */}
-        <div style={{ flex: '1 1 300px', maxWidth: '450px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%' }}>
-          {/* Wordle Rows */}
-          <div style={{
-            display: 'grid', gridTemplateRows: 'repeat(6, 1fr)', gap: '6px', width: '100%', maxWidth: '280px',
-            position: 'relative'
-          }}>
-            {Array(6).fill(null).map((_, rIdx) => {
-              const isSubmitted = rIdx < currentRow;
-              const isCurrent = rIdx === currentRow;
-              const guessWord = guesses[rIdx] || '';
-              
-              return (
-                <div key={rIdx} style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
-                  {Array(5).fill(null).map((_, cIdx) => {
-                    let letter = '';
-                    if (isSubmitted) {
-                      letter = guessWord[cIdx];
-                    } else if (isCurrent) {
-                      letter = currentGuess[cIdx] || '';
-                    }
+        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
 
-                    const status = isSubmitted ? getLetterStatus(letter, cIdx, guessWord) : '';
-                    let cellStyle = {
-                      aspectRatio: '1',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: 'var(--radius-sm)',
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      display: 'grid',
-                      placeContent: 'center',
-                      fontSize: '1.4rem',
-                      fontWeight: 800,
-                      color: 'var(--text-primary)',
-                      textTransform: 'uppercase',
-                      transition: 'all 0.3s ease'
-                    };
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
+        
+        {/* Wordle Grid */}
+        <div style={{ display: 'grid', gridTemplateRows: 'repeat(6, 1fr)', gap: '6px', width: '100%', maxWidth: '280px', marginBottom: '1.5rem', position: 'relative' }}>
+          {guesses.map((guessWord, rIdx) => {
+            const isCurrent = rIdx === currentRow;
+            const isSubmitted = rIdx < currentRow;
 
-                    if (status === 'correct') {
-                      cellStyle.background = 'rgba(16, 185, 129, 0.2)';
-                      cellStyle.borderColor = 'var(--accent-green)';
-                      cellStyle.color = 'var(--accent-green)';
-                    } else if (status === 'present') {
-                      cellStyle.background = 'rgba(245, 158, 11, 0.2)';
-                      cellStyle.borderColor = 'var(--accent-amber)';
-                      cellStyle.color = 'var(--accent-amber)';
-                    } else if (status === 'absent') {
-                      cellStyle.background = 'rgba(255, 255, 255, 0.03)';
-                      cellStyle.borderColor = 'rgba(255, 255, 255, 0.1)';
-                      cellStyle.color = 'var(--text-secondary)';
-                    } else if (letter) {
-                      cellStyle.borderColor = 'var(--accent-cyan)';
-                    }
+            return (
+              <div key={rIdx} style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
+                {Array(5).fill(null).map((_, cIdx) => {
+                  let letter = '';
+                  if (isSubmitted) {
+                    letter = guessWord[cIdx];
+                  } else if (isCurrent) {
+                    letter = currentGuess[cIdx] || '';
+                  }
 
-                    return (
-                      <div key={cIdx} style={cellStyle}>
-                        {letter}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-
-            {/* Win/Loss overlay */}
-            {gameOver && (
-              <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
-                {won ? (
-                  <>
-                    <i className="fa-solid fa-trophy" style={{ fontSize: '3rem', color: 'var(--accent-green)' }} />
-                    <h2 style={{ color: 'var(--accent-green)' }}>Victory!</h2>
-                    <p>Streak increases to {streak}!</p>
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-face-frown" style={{ fontSize: '3rem', color: 'var(--accent-red)' }} />
-                    <h2 style={{ color: 'var(--accent-red)' }}>Game Over</h2>
-                    <p>The solution was: <strong>{solution}</strong></p>
-                  </>
-                )}
-                <button className="btn btn-primary" onClick={initGame} style={{ marginTop: '0.5rem' }}>
-                  Play Again
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Virtual Keyboard */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', padding: '0 0.5rem' }}>
-            {keyboardRows.map((row, rIdx) => (
-              <div key={rIdx} style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
-                {row.map(key => {
-                  const status = getKeyboardKeyStatus(key);
-                  const isAction = key === 'ENTER' || key === 'BACK';
-                  
-                  let keyStyle = {
-                    flex: isAction ? '1.5' : '1',
-                    minWidth: isAction ? '45px' : '26px',
-                    height: '42px',
-                    borderRadius: 'var(--radius-sm)',
+                  const status = isSubmitted ? getLetterStatus(letter, cIdx, guessWord) : '';
+                  let cellStyle = {
+                    aspectRatio: '1',
                     border: '1px solid var(--border-color)',
-                    background: 'var(--bg-secondary)',
-                    color: 'var(--text-primary)',
-                    fontSize: isAction ? '0.7rem' : '0.85rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
+                    borderRadius: 'var(--radius-sm)',
+                    background: 'rgba(255, 255, 255, 0.02)',
                     display: 'grid',
                     placeContent: 'center',
-                    transition: 'all 0.15s ease',
-                    userSelect: 'none'
+                    fontSize: '1.4rem',
+                    fontWeight: 800,
+                    color: 'var(--text-primary)',
+                    textTransform: 'uppercase',
+                    transition: 'all 0.3s ease'
                   };
 
                   if (status === 'correct') {
-                    keyStyle.background = 'var(--accent-green)';
-                    keyStyle.borderColor = 'var(--accent-green)';
-                    keyStyle.color = '#fff';
+                    cellStyle.background = 'rgba(16, 185, 129, 0.2)';
+                    cellStyle.borderColor = 'var(--accent-green)';
+                    cellStyle.color = 'var(--accent-green)';
                   } else if (status === 'present') {
-                    keyStyle.background = 'var(--accent-amber)';
-                    keyStyle.borderColor = 'var(--accent-amber)';
-                    keyStyle.color = '#fff';
+                    cellStyle.background = 'rgba(245, 158, 11, 0.2)';
+                    cellStyle.borderColor = 'var(--accent-amber)';
+                    cellStyle.color = 'var(--accent-amber)';
                   } else if (status === 'absent') {
-                    keyStyle.background = 'rgba(255, 255, 255, 0.04)';
-                    keyStyle.borderColor = 'rgba(255, 255, 255, 0.05)';
-                    keyStyle.color = 'var(--text-secondary)';
+                    cellStyle.background = 'rgba(255, 255, 255, 0.03)';
+                    cellStyle.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    cellStyle.color = 'var(--text-secondary)';
+                  } else if (letter) {
+                    cellStyle.borderColor = 'var(--accent-cyan)';
                   }
 
                   return (
-                    <button 
-                      key={key} 
-                      style={keyStyle}
-                      onClick={() => handleKeyPress(key)}
-                    >
-                      {key}
-                    </button>
+                    <div key={cIdx} style={cellStyle}>
+                      {letter}
+                    </div>
                   );
                 })}
               </div>
-            ))}
-          </div>
+            );
+          })}
+
+          {/* Win/Loss overlay */}
+          {gameOver && (
+            <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+              {won ? (
+                <>
+                  <i className="fa-solid fa-trophy" style={{ fontSize: '3rem', color: 'var(--accent-green)' }} />
+                  <h2 style={{ color: 'var(--accent-green)' }}>Victory!</h2>
+                  <p>Streak: {streak} 🔥</p>
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-face-frown" style={{ fontSize: '3rem', color: 'var(--accent-red)' }} />
+                  <h2 style={{ color: 'var(--accent-red)' }}>Game Over</h2>
+                  <p style={{ textAlign: 'center' }}>Solution: <strong>{solution}</strong></p>
+                </>
+              )}
+              <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+                <button className="btn btn-primary" onClick={initGame} style={{ flex: 1 }}>
+                  Play Again
+                </button>
+                <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ flex: 1 }}>
+                  Lobby
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Virtual Keyboard */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', padding: '0 0.5rem' }}>
+          {keyboardRows.map((row, rIdx) => (
+            <div key={rIdx} style={{ display: 'flex', justifyContent: 'center', gap: '4px' }}>
+              {row.map(key => {
+                const status = getKeyboardKeyStatus(key);
+                const isAction = key === 'ENTER' || key === 'BACK';
+                
+                let keyStyle = {
+                  flex: isAction ? '1.5' : '1',
+                  minWidth: isAction ? '45px' : '26px',
+                  height: '42px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-secondary)',
+                  color: 'var(--text-primary)',
+                  fontSize: isAction ? '0.7rem' : '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'grid',
+                  placeContent: 'center',
+                  transition: 'all 0.15s ease',
+                  userSelect: 'none'
+                };
+
+                if (status === 'correct') {
+                  keyStyle.background = 'var(--accent-green)';
+                  keyStyle.borderColor = 'var(--accent-green)';
+                  keyStyle.color = '#fff';
+                } else if (status === 'present') {
+                  keyStyle.background = 'var(--accent-amber)';
+                  keyStyle.borderColor = 'var(--accent-amber)';
+                  keyStyle.color = '#fff';
+                } else if (status === 'absent') {
+                  keyStyle.background = 'rgba(255, 255, 255, 0.04)';
+                  keyStyle.borderColor = 'rgba(255, 255, 255, 0.05)';
+                  keyStyle.color = 'var(--text-secondary)';
+                }
+
+                return (
+                  <button 
+                    key={key} 
+                    style={keyStyle}
+                    onClick={() => handleKeyPress(key)}
+                  >
+                    {key}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
     </div>

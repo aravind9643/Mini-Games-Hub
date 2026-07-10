@@ -15,6 +15,7 @@ export default function TicTacToe() {
   const [winner, setWinner] = useState(null); // 'X', 'O', 'Tie', or null
   const [winningLine, setWinningLine] = useState([]);
   const [isThinking, setIsThinking] = useState(false);
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Check for winner
   const checkWinner = useCallback((currentBoard) => {
@@ -162,80 +163,87 @@ export default function TicTacToe() {
     setScores({ x: 0, o: 0, ties: 0 });
   };
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Tic Tac Toe</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Board</span>
-            <span className="meta-tag difficulty">Easy / Hard</span>
-          </div>
-        </div>
-        <div className="game-controls-area">
-          <button className="btn btn-secondary" onClick={handleResetScores}>
-            <i className="fa-solid fa-rotate-left"></i> Reset Scores
-          </button>
-          <button className="btn btn-primary" onClick={handleReset}>
-            Restart Game
-          </button>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Game Configurations */}
-        <div style={{
-          flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Setup</h3>
-          
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Game Mode</label>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                className={`btn ${gameMode === 'computer' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '0.5rem' }}
-                onClick={() => { setGameMode('computer'); handleResetScores(); }}
-              >
-                vs Computer
-              </button>
-              <button 
-                className={`btn ${gameMode === 'local' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '0.5rem' }}
-                onClick={() => { setGameMode('local'); handleResetScores(); }}
-              >
-                Local 2 Player
-              </button>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Tic Tac Toe</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Board</span>
+              <span className="meta-tag difficulty">Easy / Hard</span>
             </div>
           </div>
+        </div>
 
-          {gameMode === 'computer' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Challenge a friend locally or take on an unbeatable Minimax AI agent. Take turns marking X or O on a 3x3 grid. Connect three in a row to win!
+            </p>
+          </div>
+
+          {/* Setup Options */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Setup</h3>
+            
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>AI Difficulty</label>
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Game Mode</label>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button 
-                  className={`btn ${difficulty === 'easy' ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`btn ${gameMode === 'computer' ? 'btn-primary' : 'btn-secondary'}`}
                   style={{ flex: 1, padding: '0.5rem' }}
-                  onClick={() => { setDifficulty('easy'); handleReset(); }}
+                  onClick={() => { setGameMode('computer'); handleResetScores(); }}
                 >
-                  Easy
+                  vs Computer
                 </button>
                 <button 
-                  className={`btn ${difficulty === 'hard' ? 'btn-primary' : 'btn-secondary'}`}
+                  className={`btn ${gameMode === 'local' ? 'btn-primary' : 'btn-secondary'}`}
                   style={{ flex: 1, padding: '0.5rem' }}
-                  onClick={() => { setDifficulty('hard'); handleReset(); }}
+                  onClick={() => { setGameMode('local'); handleResetScores(); }}
                 >
-                  Unbeatable
+                  Local 2 Player
                 </button>
               </div>
             </div>
-          )}
 
-          {/* Scoreboard */}
-          <div style={{ marginTop: '1rem' }}>
-            <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Scoreboard</h4>
+            {gameMode === 'computer' && (
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>AI Difficulty</label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button 
+                    className={`btn ${difficulty === 'easy' ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ flex: 1, padding: '0.5rem' }}
+                    onClick={() => { setDifficulty('easy'); handleReset(); }}
+                  >
+                    Easy
+                  </button>
+                  <button 
+                    className={`btn ${difficulty === 'hard' ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ flex: 1, padding: '0.5rem' }}
+                    onClick={() => { setDifficulty('hard'); handleReset(); }}
+                  >
+                    Unbeatable
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Scores */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Current Scoreboard</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
               <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '0.5rem' }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)' }}>Player X</div>
@@ -250,47 +258,93 @@ export default function TicTacToe() {
                 <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{scores.ties}</div>
               </div>
             </div>
+            <button className="btn btn-secondary" onClick={handleResetScores} style={{ width: '100%', marginTop: '0.5rem', padding: '0.5rem' }}>
+              Reset Scores
+            </button>
           </div>
+
+          <button className="btn btn-primary" onClick={() => { handleReset(); setGameState('playing'); }} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.85rem', fontWeight: 700 }}>
+          <span style={{ color: 'var(--accent-cyan)' }}>X: {scores.x}</span>
+          <span style={{ color: 'var(--text-muted)' }}>Ties: {scores.ties}</span>
+          <span style={{ color: 'var(--accent-pink)' }}>O: {scores.o}</span>
         </div>
 
-        {/* Board and Status Panel */}
-        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {winner ? (
-            <div className={`tictactoe-status winner`}>
-              {winner === 'Tie' ? (
-                <span>🤝 It's a Draw!</span>
-              ) : (
-                <span>🎉 Winner: Player {winner}!</span>
-              )}
-            </div>
-          ) : (
-            <div className="tictactoe-status">
-              {isThinking ? (
-                <span>🤖 Computer is thinking...</span>
-              ) : (
-                <span>🎮 Turn: Player {isXNext ? 'X' : 'O'}</span>
-              )}
-            </div>
-          )}
+        <button className="btn btn-secondary" onClick={handleReset} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
 
-          <div className="tictactoe-board">
-            {board.map((cell, idx) => {
-              const isWinningCell = winningLine.includes(idx);
-              const cellClass = `tictactoe-cell ${cell ? cell.toLowerCase() : ''} ${isWinningCell ? 'winning-cell' : ''}`;
-              return (
-                <button
-                  key={idx}
-                  className={cellClass}
-                  onClick={() => handleClick(idx)}
-                  disabled={cell !== null || winner !== null || isThinking}
-                  aria-label={`Board space ${idx + 1}, ${cell || 'empty'}`}
-                >
-                  {cell}
-                </button>
-              );
-            })}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
+        {/* Active Turn Status bar */}
+        {!winner && (
+          <div className="tictactoe-status" style={{ marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
+            {isThinking ? (
+              <span>🤖 Computer is thinking...</span>
+            ) : (
+              <span>🎮 Turn: Player {isXNext ? 'X' : 'O'}</span>
+            )}
           </div>
+        )}
+
+        {/* 3x3 Board grid */}
+        <div className="tictactoe-board">
+          {board.map((cell, idx) => {
+            const isWinningCell = winningLine.includes(idx);
+            const cellClass = `tictactoe-cell ${cell ? cell.toLowerCase() : ''} ${isWinningCell ? 'winning-cell' : ''}`;
+            return (
+              <button
+                key={idx}
+                className={cellClass}
+                onClick={() => handleClick(idx)}
+                disabled={cell !== null || winner !== null || isThinking}
+                aria-label={`Board space ${idx + 1}, ${cell || 'empty'}`}
+              >
+                {cell}
+              </button>
+            );
+          })}
         </div>
+
+        {/* Game Over modal overlay */}
+        {winner && (
+          <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+            {winner === 'Tie' ? (
+              <>
+                <i className="fa-solid fa-handshake" style={{ fontSize: '3rem', color: 'var(--text-secondary)' }} />
+                <h2>It's a Tie!</h2>
+              </>
+            ) : (
+              <>
+                <i className="fa-solid fa-trophy" style={{ fontSize: '3rem', color: 'var(--accent-green)' }} />
+                <h2>Player {winner} Wins!</h2>
+              </>
+            )}
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+              <button className="btn btn-primary" onClick={handleReset} style={{ flex: 1 }}>
+                Play Again
+              </button>
+              <button className="btn btn-secondary" onClick={() => { handleReset(); setGameState('lobby'); }} style={{ flex: 1 }}>
+                Lobby
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

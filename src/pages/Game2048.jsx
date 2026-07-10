@@ -13,6 +13,7 @@ export default function Game2048() {
   const [spawnedCell, setSpawnedCell] = useState(null);
   const [moveCount, setMoveCount] = useState(0);
   const [moveDirection, setMoveDirection] = useState(null);
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Swipe gesture detection refs
   const touchStart = useRef({ x: 0, y: 0 });
@@ -86,12 +87,8 @@ export default function Game2048() {
     setSpawnedCell(secondTile.coord ? `${secondTile.coord.r}-${secondTile.coord.c}` : null);
     setMoveCount(0);
     setMoveDirection(null);
+    setGameState('playing');
   }, [addRandomTile]);
-
-  // Run on mount
-  useEffect(() => {
-    initGame();
-  }, [initGame]);
 
   // Core Merging logic for single row (Left slide)
   const slideAndMergeRowLeft = (row, scoreIncrementRef) => {
@@ -283,121 +280,150 @@ export default function Game2048() {
     }
   };
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>2048 Puzzle</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Puzzle</span>
-            <span className="meta-tag difficulty">Medium</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>2048 Puzzle</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Puzzle</span>
+              <span className="meta-tag difficulty">Medium</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          <button className="btn btn-primary" onClick={initGame}>
-            Restart Game
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Use Arrow Keys, WASD, or swipe the screen to slide tiles. When two tiles with the same number touch, they merge into one! Combine tiles to reach 2048.
+            </p>
+          </div>
+
+          {/* Scores */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+            <div className="snake-stat-box">
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Personal Best</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>{highScore} pts</div>
+            </div>
+          </div>
+
+          <button className="btn btn-primary" onClick={initGame} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Stats & Controls Info */}
-        <div style={{
-          flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Info</h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', textAlign: 'center' }}>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Score</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{score}</div>
-            </div>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>High Score</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-green)' }}>{highScore}</div>
-            </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            Score: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{score}</span>
           </div>
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Instructions:</h4>
-            <p>⌨️ Use **Arrow Keys** or **WASD** to slide blocks.</p>
-            <p>📱 On mobile, **Swipe** inside the grid in any direction.</p>
-            <p>🔄 Merge matching numbers to reach the **2048 tile**!</p>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            Best: <span style={{ fontWeight: 800, color: 'var(--accent-green)' }}>{highScore}</span>
           </div>
+        </div>
 
-          {/* Direction Buttons for backup/accessibility */}
-          <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-            <button className="btn btn-secondary" style={{ width: '45px', height: '45px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('up')} aria-label="Slide Up">
+        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
+        
+        {/* 2048 Board */}
+        <div 
+          className="game2048-container"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="game2048-grid" style={{ position: 'relative' }}>
+            {board.flatMap((row, r) =>
+              row.map((cell, c) => {
+                const key = `${r}-${c}`;
+                const isMerged = mergedCells.includes(key);
+                const isSpawned = spawnedCell === key;
+                const tileClass = `game2048-cell ${cell ? `tile-${cell} val-${cell} ${moveDirection ? `slide-${moveDirection}` : ''}` : ''} ${isMerged ? 'tile-merged' : ''} ${isSpawned ? 'tile-spawned' : ''}`;
+                return (
+                  <div key={`${key}-${moveCount}`} className={tileClass}>
+                    {cell > 0 ? cell : ''}
+                  </div>
+                );
+              })
+            )}
+
+            {/* Game Over Overlay */}
+            {gameOver && (
+              <div className="snake-overlay">
+                <h3>Game Over!</h3>
+                <p>Final Score: {score}</p>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  <button className="btn btn-primary" onClick={initGame}>
+                    Play Again
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => setGameState('lobby')}>
+                    Lobby
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Game Won Overlay */}
+            {won && !continuePlaying && (
+              <div className="snake-overlay">
+                <h3 style={{ color: 'var(--accent-green)', textShadow: '0 0 10px rgba(16, 185, 129, 0.5)' }}>You Reached 2048!</h3>
+                <p>Incredible achievement!</p>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  <button className="btn btn-primary" onClick={() => setContinuePlaying(true)}>
+                    Continue
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => setGameState('lobby')}>
+                    Lobby
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Accessibility D-Pad Controllers */}
+        {!gameOver && (!won || continuePlaying) && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem', marginTop: '1rem' }}>
+            <button className="btn btn-secondary" style={{ width: '48px', height: '40px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('up')} aria-label="Slide Up">
               <i className="fa-solid fa-arrow-up" />
             </button>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <button className="btn btn-secondary" style={{ width: '45px', height: '45px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('left')} aria-label="Slide Left">
+              <button className="btn btn-secondary" style={{ width: '48px', height: '40px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('left')} aria-label="Slide Left">
                 <i className="fa-solid fa-arrow-left" />
               </button>
-              <div style={{ width: '45px' }}></div>
-              <button className="btn btn-secondary" style={{ width: '45px', height: '45px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('right')} aria-label="Slide Right">
+              <div style={{ width: '48px' }}></div>
+              <button className="btn btn-secondary" style={{ width: '48px', height: '40px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('right')} aria-label="Slide Right">
                 <i className="fa-solid fa-arrow-right" />
               </button>
             </div>
-            <button className="btn btn-secondary" style={{ width: '45px', height: '45px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('down')} aria-label="Slide Down">
+            <button className="btn btn-secondary" style={{ width: '48px', height: '40px', display: 'grid', placeContent: 'center' }} onClick={() => performMove('down')} aria-label="Slide Down">
               <i className="fa-solid fa-arrow-down" />
             </button>
           </div>
-        </div>
-
-        {/* 2048 Board */}
-        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <div 
-            className="game2048-container"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className="game2048-grid" style={{ position: 'relative' }}>
-              {board.flatMap((row, r) =>
-                row.map((cell, c) => {
-                  const key = `${r}-${c}`;
-                  const isMerged = mergedCells.includes(key);
-                  const isSpawned = spawnedCell === key;
-                  const tileClass = `game2048-cell ${cell ? `tile-${cell} val-${cell} ${moveDirection ? `slide-${moveDirection}` : ''}` : ''} ${isMerged ? 'tile-merged' : ''} ${isSpawned ? 'tile-spawned' : ''}`;
-                  return (
-                    <div key={`${key}-${moveCount}`} className={tileClass}>
-                      {cell > 0 ? cell : ''}
-                    </div>
-                  );
-                })
-              )}
-
-              {/* Game Over Overlay */}
-              {gameOver && (
-                <div className="snake-overlay">
-                  <h3>Game Over!</h3>
-                  <p>Final Score: {score}</p>
-                  <button className="btn btn-primary" onClick={initGame}>
-                    Try Again
-                  </button>
-                </div>
-              )}
-
-              {/* Game Won Overlay */}
-              {won && !continuePlaying && (
-                <div className="snake-overlay">
-                  <h3 style={{ color: 'var(--accent-green)', textShadow: '0 0 10px rgba(16, 185, 129, 0.5)' }}>You Reached 2048!</h3>
-                  <p>Incredible achievement! Keep pushing your boundaries.</p>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn btn-primary" onClick={() => setContinuePlaying(true)}>
-                      Continue Playing
-                    </button>
-                    <button className="btn btn-secondary" onClick={initGame}>
-                      Restart
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

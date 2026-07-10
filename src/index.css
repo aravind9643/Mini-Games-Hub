@@ -160,7 +160,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .main-content {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  margin-left: 0;
   padding-top: var(--navbar-height);
   min-height: 100vh;
   transition: margin-left var(--transition-base);
@@ -169,7 +169,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 2rem 4rem;
+  padding: 1rem 1rem 3rem;
 }
 
 /* ---- Navbar ---- */
@@ -186,7 +186,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 1rem;
   z-index: 300;
   transition: left var(--transition-base), background var(--transition-base), border-color var(--transition-base), color var(--transition-base);
 }
@@ -198,7 +198,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .mobile-menu-btn {
-  display: none;
+  display: block;
   background: none;
   border: none;
   color: var(--text-primary);
@@ -208,7 +208,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .navbar-search {
   position: relative;
-  width: 320px;
+  flex: 1;
+  max-width: 180px;
 }
 
 .navbar-search input {
@@ -274,7 +275,12 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 400;
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-base), background var(--transition-base), border-color var(--transition-base);
+  transform: translateX(-100%);
+  transition: transform var(--transition-slow), background var(--transition-base), border-color var(--transition-base);
+}
+
+.sidebar.open {
+  transform: translateX(0);
 }
 
 .sidebar-header {
@@ -307,11 +313,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar-close-btn {
-  display: none;
+  display: block;
   background: none;
   border: none;
   color: var(--text-primary);
   font-size: 1.25rem;
+  padding: 0.5rem;
 }
 
 .sidebar-nav {
@@ -403,7 +410,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hero h1 {
-  font-size: 2.75rem;
+  font-size: 2rem;
   font-weight: 800;
   margin-bottom: 1rem;
   background: linear-gradient(135deg, var(--text-primary) 30%, var(--text-secondary));
@@ -421,8 +428,9 @@ h1, h2, h3, h4, h5, h6 {
 /* ---- Catalog Controls ---- */
 .catalog-heading {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
   margin-bottom: 1.5rem;
 }
 
@@ -1094,8 +1102,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .minesweeper-cell {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 4px;
@@ -1103,7 +1111,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   transition: all var(--transition-fast);
   user-select: none;
 }
@@ -1161,60 +1169,73 @@ h1, h2, h3, h4, h5, h6 {
   to { transform: rotate(360deg); }
 }
 
-/* ---- Responsive Styles ---- */
-@media (max-width: 1024px) {
-  .main-content {
-    margin-left: 0;
-  }
-  
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  
-  .sidebar.open {
-    transform: translateX(0);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-  }
-  
-  .mobile-menu-btn {
-    display: block;
-  }
-  
-  .sidebar-close-btn {
-    display: block;
-  }
-  
-  .navbar-search {
-    width: 200px;
+/* ========================================
+   ---- Responsive / Mobile-First Breaks ----
+   ======================================== */
+
+.navbar .sidebar-title {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .navbar .sidebar-title {
+    display: inline;
   }
 }
 
-@media (max-width: 768px) {
-  .navbar-search {
+@media (min-width: 768px) {
+  /* Layout */
+  .main-content {
+    margin-left: var(--sidebar-width);
+  }
+
+  .page-container {
+    padding: 2rem 2rem 4rem;
+  }
+
+  /* Navbar */
+  .navbar {
+    left: var(--sidebar-width);
+    padding: 0 2rem;
+  }
+
+  .mobile-menu-btn {
     display: none;
   }
-  
+
+  .navbar-search {
+    max-width: 320px;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-close-btn {
+    display: none;
+  }
+
+  /* Hero Section */
   .hero h1 {
-    font-size: 2.25rem;
+    font-size: 2.75rem;
   }
-  
-  .page-container {
-    padding: 1.5rem 1rem 3rem;
+
+  /* Catalog */
+  .catalog-heading {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
   }
-  
-  .game-container {
-    padding: 1.5rem;
+
+  /* Minesweeper */
+  .minesweeper-cell {
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
   }
 }
 
-@media (max-width: 576px) {
-  .catalog-heading {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-  
-  .category-chips {
-    margin-bottom: 1.5rem;
-  }
+.sidebar.open {
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }

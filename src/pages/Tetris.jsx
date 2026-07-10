@@ -25,6 +25,7 @@ export default function Tetris() {
   const [gameOver, setGameOver] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [nextPiece, setNextPiece] = useState('I');
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
   const [highScore, setHighScore] = useState(() => {
     return parseInt(localStorage.getItem('games-tetris-highscore') || '0', 10);
   });
@@ -67,7 +68,6 @@ export default function Tetris() {
     }
   }, []);
 
-  // Initialize Game
   const initGame = () => {
     grid.current = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
     gridColors.current = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
@@ -86,6 +86,7 @@ export default function Tetris() {
     setGameStarted(true);
     setIsPaused(false);
     lastTick.current = Date.now();
+    setGameState('playing');
   };
 
   // Collision checking helper
@@ -360,158 +361,174 @@ export default function Tetris() {
     ctx.fillRect(0, 0, COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE);
   }, []);
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Tetris Classic</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Puzzle</span>
-            <span className="meta-tag difficulty">Hard</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Tetris Classic</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Puzzle</span>
+              <span className="meta-tag difficulty">Hard</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          {gameStarted && !gameOver && (
-            <button className="btn btn-secondary" onClick={() => setIsPaused(!isPaused)}>
-              <i className={isPaused ? "fa-solid fa-play" : "fa-solid fa-pause"}></i> {isPaused ? 'Resume' : 'Pause'}
-            </button>
-          )}
-          <button className="btn btn-primary" onClick={initGame}>
-            {gameOver ? 'Play Again' : 'Start'}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Use your keyboard Arrow keys or the mobile D-pad controls to move (Left/Right), soft-drop (Down), and rotate (Up/Rotate) falling shapes. Complete solid rows horizontally to clear them and score points!
+            </p>
+          </div>
+
+          {/* Scores */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+            <div className="snake-stat-box">
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Best Score</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>{highScore} pts</div>
+            </div>
+          </div>
+
+          <button className="btn btn-primary" onClick={initGame} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Game Stats */}
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button 
+          className="btn btn-secondary" 
+          onClick={() => { 
+            if (frameId.current) cancelAnimationFrame(frameId.current);
+            setGameStarted(false); 
+            setGameState('lobby'); 
+          }} 
+          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)' }}>S:{score}</span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--accent-green)' }}>L:{lines}</span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--accent-amber)' }}>Lv:{level}</span>
+        </div>
+
+        {gameStarted && !gameOver && (
+          <button className="btn btn-secondary" onClick={() => setIsPaused(!isPaused)} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className={isPaused ? "fa-solid fa-play" : "fa-solid fa-pause"}></i> {isPaused ? 'Resume' : 'Pause'}
+          </button>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '1.5rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
+        
+        {/* Next Piece Preview */}
         <div style={{
-          flex: '1 1 200px', maxWidth: '280px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
+          background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)',
+          padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem', width: '100%', maxWidth: '240px', justifyContent: 'center', marginBottom: '1rem'
         }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Info</h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', textAlign: 'center' }}>
-            <div className="snake-stat-box" style={{ gridColumn: 'span 2' }}>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Score</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{score}</div>
-            </div>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Lines</div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-green)' }}>{lines}</div>
-            </div>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Level</div>
-              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--accent-amber)' }}>{level}</div>
-            </div>
-          </div>
-
-          {/* Next Piece Preview */}
-          <div style={{
-            background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)',
-            padding: '0.75rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem'
-          }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Next Piece</span>
-            <div style={{
-              width: '80px', height: '50px', display: 'grid', placeContent: 'center', position: 'relative'
-            }}>
-              {gameStarted && !gameOver && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  {SHAPES[nextPiece].matrix.map((row, r) => (
-                    <div key={r} style={{ display: 'flex', gap: '3px' }}>
-                      {row.map((cell, c) => (
-                        <div 
-                          key={c}
-                          style={{
-                            width: '12px',
-                            height: '12px',
-                            background: cell !== 0 ? SHAPES[nextPiece].color : 'transparent',
-                            borderRadius: '2px',
-                            boxShadow: cell !== 0 ? `0 0 6px ${SHAPES[nextPiece].shadow}` : 'none'
-                          }}
-                        />
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-            🏆 Top Score: <span style={{ color: 'var(--accent-green)', fontWeight: 700 }}>{highScore}</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Next:</span>
+          <div style={{ width: '40px', height: '24px', display: 'grid', placeContent: 'center', position: 'relative' }}>
+            {gameStarted && !gameOver && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                {SHAPES[nextPiece].matrix.map((row, r) => (
+                  <div key={r} style={{ display: 'flex', gap: '2px' }}>
+                    {row.map((cell, c) => (
+                      <div 
+                        key={c}
+                        style={{
+                          width: '8px',
+                          height: '8px',
+                          background: cell !== 0 ? SHAPES[nextPiece].color : 'transparent',
+                          borderRadius: '1px',
+                          boxShadow: cell !== 0 ? `0 0 4px ${SHAPES[nextPiece].shadow}` : 'none'
+                        }}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Board Canvas Screen */}
-        <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div 
-            className="snake-canvas-container"
-            style={{ width: `${COLS * BLOCK_SIZE + 6}px`, height: `${ROWS * BLOCK_SIZE + 6}px`, padding: '3px', position: 'relative' }}
-          >
-            <canvas ref={canvasRef} width={COLS * BLOCK_SIZE} height={ROWS * BLOCK_SIZE} />
+        <div 
+          className="snake-canvas-container"
+          style={{ width: `${COLS * BLOCK_SIZE + 6}px`, height: `${ROWS * BLOCK_SIZE + 6}px`, padding: '3px', position: 'relative', marginBottom: '1.5rem' }}
+        >
+          <canvas ref={canvasRef} width={COLS * BLOCK_SIZE} height={ROWS * BLOCK_SIZE} />
 
-            {/* Overlays */}
-            {!gameStarted && (
-              <div className="snake-overlay">
-                <i className="fa-solid fa-cubes-stacked" style={{ fontSize: '3rem', color: 'var(--accent-purple)' }}></i>
-                <h2>Tetris</h2>
-                <button className="btn btn-primary" onClick={initGame}>
-                  Start Game
-                </button>
-              </div>
-            )}
+          {/* Overlays */}
+          {isPaused && gameStarted && (
+            <div className="snake-overlay">
+              <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
+              <h2>Game Paused</h2>
+              <button className="btn btn-primary" onClick={() => setIsPaused(false)}>
+                Resume Game
+              </button>
+            </div>
+          )}
 
-            {isPaused && gameStarted && (
-              <div className="snake-overlay">
-                <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
-                <h2>Game Paused</h2>
-                <button className="btn btn-primary" onClick={() => setIsPaused(false)}>
-                  Resume Game
-                </button>
-              </div>
-            )}
-
-            {gameOver && (
-              <div className="snake-overlay">
-                <h3 style={{ color: 'var(--accent-red)' }}>Game Over</h3>
-                <p>Score: {score}</p>
+          {gameOver && (
+            <div className="snake-overlay">
+              <h3 style={{ color: 'var(--accent-red)' }}>Game Over</h3>
+              <p>Score: {score}</p>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                 <button className="btn btn-primary" onClick={initGame}>
                   Play Again
                 </button>
+                <button className="btn btn-secondary" onClick={() => { setGameStarted(false); setGameState('lobby'); }}>
+                  Lobby
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Mobile controls layout */}
         {gameStarted && !gameOver && !isPaused && (
           <div style={{
-            flex: '1 1 100%',
             display: 'flex',
             justifyContent: 'center',
-            gap: '1rem',
+            gap: '0.75rem',
             padding: '0.5rem',
             flexWrap: 'wrap',
-            maxWidth: '440px',
+            width: '100%',
+            maxWidth: '300px',
             margin: '0 auto'
           }}>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button className="btn btn-secondary" onClick={moveLeft} aria-label="Left" style={{ width: '50px', height: '45px' }}>
+            <div style={{ display: 'flex', gap: '0.4rem', width: '100%', justifyContent: 'center' }}>
+              <button className="btn btn-secondary" onClick={moveLeft} aria-label="Left" style={{ flex: 1, height: '42px' }}>
                 <i className="fa-solid fa-arrow-left" />
               </button>
-              <button className="btn btn-secondary" onClick={rotatePiece} aria-label="Rotate" style={{ width: '50px', height: '45px' }}>
+              <button className="btn btn-secondary" onClick={rotatePiece} aria-label="Rotate" style={{ flex: 1, height: '42px' }}>
                 <i className="fa-solid fa-rotate" />
               </button>
-              <button className="btn btn-secondary" onClick={moveRight} aria-label="Right" style={{ width: '50px', height: '45px' }}>
+              <button className="btn btn-secondary" onClick={moveRight} aria-label="Right" style={{ flex: 1, height: '42px' }}>
                 <i className="fa-solid fa-arrow-right" />
               </button>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button className="btn btn-secondary" onClick={softDrop} aria-label="Down" style={{ width: '50px', height: '45px' }}>
+            <div style={{ display: 'flex', gap: '0.4rem', width: '100%', justifyContent: 'center' }}>
+              <button className="btn btn-secondary" onClick={softDrop} aria-label="Down" style={{ flex: 1, height: '42px' }}>
                 <i className="fa-solid fa-arrow-down" />
               </button>
-              <button className="btn btn-secondary" onClick={hardDrop} aria-label="Drop" style={{ width: '80px', height: '45px', fontSize: '0.75rem', fontWeight: 800 }}>
+              <button className="btn btn-secondary" onClick={hardDrop} aria-label="Drop" style={{ flex: 1.5, height: '42px', fontSize: '0.75rem', fontWeight: 800 }}>
                 DROP
               </button>
             </div>

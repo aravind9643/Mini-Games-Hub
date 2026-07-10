@@ -15,6 +15,7 @@ export default function NeonPong() {
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState('');
   const [isPaused, setIsPaused] = useState(false);
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Use refs for physical animation properties to avoid effect cycles
   const playerY = useRef((CANVAS_HEIGHT - PADDLE_HEIGHT) / 2);
@@ -44,6 +45,7 @@ export default function NeonPong() {
     setWinner('');
     setGameStarted(true);
     setIsPaused(false);
+    setGameState('playing');
   };
 
   // Key handlers
@@ -246,98 +248,106 @@ export default function NeonPong() {
     playerY.current = Math.min(CANVAS_HEIGHT - PADDLE_HEIGHT, Math.max(0, scaledY - PADDLE_HEIGHT / 2));
   };
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Neon Pong</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Arcade</span>
-            <span className="meta-tag difficulty">Medium</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Neon Pong</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Arcade</span>
+              <span className="meta-tag difficulty">Medium</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          {gameStarted && !gameOver && (
-            <button className="btn btn-secondary" onClick={() => setIsPaused(!isPaused)}>
-              <i className={isPaused ? "fa-solid fa-play" : "fa-solid fa-pause"}></i> {isPaused ? 'Resume' : 'Pause'}
-            </button>
-          )}
-          <button className="btn btn-primary" onClick={initGame}>
-            {gameOver ? 'Play Again' : 'Start'}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Use W/S or Arrow Keys to move your paddle up and down. On touch screens, drag your finger inside the game board area to slide your paddle. Deflect the ball past the CPU pad to score. First to reach 7 wins!
+            </p>
+          </div>
+
+          <button className="btn btn-primary" onClick={initGame} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Game Stats */}
-        <div style={{
-          flex: '1 1 250px', maxWidth: '300px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Match Info</h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', textAlign: 'center' }}>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>You (Cyan)</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{score.player}</div>
-            </div>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>CPU (Pink)</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-pink)' }}>{score.computer}</div>
-            </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button 
+          className="btn btn-secondary" 
+          onClick={() => { 
+            if (frameId.current) cancelAnimationFrame(frameId.current);
+            setGameStarted(false); 
+            setGameState('lobby'); 
+          }} 
+          style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            You: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{score.player}</span>
           </div>
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Controls:</h4>
-            <p>⌨️ Press **W/S** or **Arrow Up/Down** to move your paddle.</p>
-            <p>📱 Drag your finger up/down on the game screen to slide paddle.</p>
-            <p>🏆 The first side to reach **{WINNING_SCORE} points** wins the match!</p>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            CPU: <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{score.computer}</span>
           </div>
         </div>
 
+        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '400px', width: '100%', position: 'relative' }}>
+        
         {/* Canvas Screen */}
-        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-          <div 
-            className="snake-canvas-container"
-            onTouchMove={handleTouchMove}
-            style={{ width: '100%', maxWidth: '400px', aspectRatio: '4/3', overflow: 'hidden' }}
-          >
-            <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{ display: 'block', width: '100%', height: '100%' }} />
+        <div 
+          className="snake-canvas-container"
+          onTouchMove={handleTouchMove}
+          style={{ width: '100%', maxWidth: '400px', aspectRatio: '4/3', overflow: 'hidden', position: 'relative' }}
+        >
+          <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{ display: 'block', width: '100%', height: '100%' }} />
 
-            {/* Overlays */}
-            {!gameStarted && (
-              <div className="snake-overlay">
-                <i className="fa-solid fa-table-tennis-paddle-ball" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
-                <h2>Neon Pong</h2>
-                <button className="btn btn-primary" onClick={initGame}>
-                  Start Game
-                </button>
-              </div>
-            )}
+          {/* Overlays */}
+          {isPaused && gameStarted && (
+            <div className="snake-overlay">
+              <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
+              <h2>Game Paused</h2>
+              <button className="btn btn-primary" onClick={() => setIsPaused(false)}>
+                Resume Game
+              </button>
+            </div>
+          )}
 
-            {isPaused && gameStarted && (
-              <div className="snake-overlay">
-                <i className="fa-solid fa-pause" style={{ fontSize: '3rem', color: 'var(--accent-cyan)' }}></i>
-                <h2>Game Paused</h2>
-                <button className="btn btn-primary" onClick={() => setIsPaused(false)}>
-                  Resume Game
-                </button>
-              </div>
-            )}
-
-            {gameOver && (
-              <div className="snake-overlay">
-                <h3 style={{ color: winner === 'Player' ? 'var(--accent-green)' : 'var(--accent-red)' }}>
-                  {winner === 'Player' ? '🏆 You Won!' : '💀 CPU Won!'}
-                </h3>
-                <p>Final Score: {score.player} - {score.computer}</p>
+          {gameOver && (
+            <div className="snake-overlay">
+              <h3 style={{ color: winner === 'Player' ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                {winner === 'Player' ? '🏆 You Won!' : '💀 CPU Won!'}
+              </h3>
+              <p>Final Score: {score.player} - {score.computer}</p>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                 <button className="btn btn-primary" onClick={initGame}>
                   Play Again
                 </button>
+                <button className="btn btn-secondary" onClick={() => { setGameStarted(false); setGameState('lobby'); }}>
+                  Lobby
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

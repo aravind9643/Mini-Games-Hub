@@ -21,6 +21,7 @@ export default function MemoryMatch() {
   const [seconds, setSeconds] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const timerRef = useRef(null);
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Initialize Board
   const initGame = useCallback(() => {
@@ -49,12 +50,8 @@ export default function MemoryMatch() {
     setFlipped([]);
     setMatched([]);
     setMoves(0);
+    setGameState('playing');
   }, [theme]);
-
-  // Restart on theme change
-  useEffect(() => {
-    initGame();
-  }, [theme, initGame]);
 
   // Timer Effect
   useEffect(() => {
@@ -122,128 +119,155 @@ export default function MemoryMatch() {
 
   const isGameWon = matched.length === cards.length && cards.length > 0;
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Memory Match</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Card</span>
-            <span className="meta-tag difficulty">Easy</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Memory Match</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Card</span>
+              <span className="meta-tag difficulty">Easy</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          <button className="btn btn-primary" onClick={initGame}>
-            Restart Game
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Tap or click cards to flip them over. Find matching pairs of icons across the board in as few moves as possible. Speed matters too!
+            </p>
+          </div>
+
+          {/* Theme Setup */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Select Theme</h3>
+            <div>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  className={`btn ${theme === 'emojis' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                  onClick={() => setTheme('emojis')}
+                >
+                  Retro Emojis
+                </button>
+                <button 
+                  className={`btn ${theme === 'dev' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                  onClick={() => setTheme('dev')}
+                >
+                  Dev Gear
+                </button>
+                <button 
+                  className={`btn ${theme === 'fruits' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                  onClick={() => setTheme('fruits')}
+                >
+                  Fruits
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Scores */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+            <div className="snake-stat-box">
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Best Moves</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>
+                {bestMoves === 999 ? 'No attempts' : `${bestMoves} moves`}
+              </div>
+            </div>
+          </div>
+
+          <button className="btn btn-primary" onClick={initGame} style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>
+            START PLAYING
           </button>
         </div>
       </div>
+    );
+  }
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Game Settings & Scoreboard */}
-        <div style={{
-          flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Setup</h3>
-          
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Card Theme</label>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button 
-                className={`btn ${theme === 'emojis' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
-                onClick={() => setTheme('emojis')}
-              >
-                Retro Emojis
-              </button>
-              <button 
-                className={`btn ${theme === 'dev' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
-                onClick={() => setTheme('dev')}
-              >
-                Dev Gear
-              </button>
-              <button 
-                className={`btn ${theme === 'fruits' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
-                onClick={() => setTheme('fruits')}
-              >
-                Fruits
-              </button>
-            </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button className="btn btn-secondary" onClick={() => { setTimerActive(false); setGameState('lobby'); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            Moves: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>{moves}</span>
           </div>
-
-          {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', textAlign: 'center', marginTop: '0.5rem' }}>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Moves</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-cyan)' }}>{moves}</div>
-            </div>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Time</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-pink)' }}>{formatTime(seconds)}</div>
-            </div>
-          </div>
-
-          {bestMoves !== 999 && (
-            <div style={{
-              background: 'var(--bg-secondary)', border: '1px solid var(--border-color)',
-              borderRadius: 'var(--radius-sm)', padding: '0.75rem', textAlign: 'center', fontSize: '0.85rem'
-            }}>
-              ⭐ Best Performance: <span style={{ color: 'var(--accent-green)', fontWeight: 700 }}>{bestMoves} moves</span>
-            </div>
-          )}
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>How to Play:</h4>
-            <p>1. Click on cards to flip them over.</p>
-            <p>2. Find matching pairs of icons.</p>
-            <p>3. Match the whole board in as few moves as possible!</p>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            Time: <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{formatTime(seconds)}</span>
           </div>
         </div>
 
-        {/* Card Grid Board */}
-        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', width: '100%' }}>
-          <div className="memory-board">
-            {cards.map((card, idx) => {
-              const isFlipped = flipped.includes(idx);
-              const isMatched = matched.includes(idx);
-              const cardClass = `memory-card ${isFlipped || isMatched ? 'flipped' : ''}`;
-              const matchedClass = `memory-card-front ${isMatched ? 'matched' : ''}`;
+        <button className="btn btn-secondary" onClick={initGame} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
 
-              return (
-                <div 
-                  key={card.id} 
-                  className={cardClass} 
-                  onClick={() => handleCardClick(idx)}
-                >
-                  <div className="memory-card-inner">
-                    <div className={matchedClass}>
-                      <span style={{ fontSize: '2rem' }}>{card.icon}</span>
-                    </div>
-                    <div className="memory-card-back">
-                      <i className="fa-solid fa-circle-question"></i>
-                    </div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
+        
+        {/* Card Grid Board */}
+        <div className="memory-board">
+          {cards.map((card, idx) => {
+            const isFlipped = flipped.includes(idx);
+            const isMatched = matched.includes(idx);
+            const cardClass = `memory-card ${isFlipped || isMatched ? 'flipped' : ''}`;
+            const matchedClass = `memory-card-front ${isMatched ? 'matched' : ''}`;
+
+            return (
+              <div 
+                key={card.id} 
+                className={cardClass} 
+                onClick={() => handleCardClick(idx)}
+              >
+                <div className="memory-card-inner">
+                  <div className={matchedClass}>
+                    <span style={{ fontSize: '2rem' }}>{card.icon}</span>
+                  </div>
+                  <div className="memory-card-back">
+                    <i className="fa-solid fa-circle-question"></i>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
+        </div>
 
-          {/* Win Screen Overlay */}
-          {isGameWon && (
-            <div className="snake-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 'var(--radius-lg)' }}>
-              <i className="fa-solid fa-trophy" style={{ fontSize: '3rem', color: 'var(--accent-amber)', textShadow: '0 0 15px rgba(245, 158, 11, 0.4)' }} />
-              <h2 style={{ color: 'var(--text-primary)' }}>Congratulations!</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>You matched all cards in <strong>{moves} moves</strong> and <strong>{formatTime(seconds)}</strong>!</p>
-              <button className="btn btn-primary" onClick={initGame}>
+        {/* Win Screen Overlay */}
+        {isGameWon && (
+          <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+            <i className="fa-solid fa-trophy" style={{ fontSize: '3rem', color: 'var(--accent-amber)', textShadow: '0 0 15px rgba(245, 158, 11, 0.4)' }} />
+            <h2 style={{ color: 'var(--text-primary)' }}>Congratulations!</h2>
+            <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+              Matched in <strong>{moves} moves</strong> and <strong>{formatTime(seconds)}</strong>!
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+              <button className="btn btn-primary" onClick={initGame} style={{ flex: 1 }}>
                 Play Again
               </button>
+              <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ flex: 1 }}>
+                Lobby
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

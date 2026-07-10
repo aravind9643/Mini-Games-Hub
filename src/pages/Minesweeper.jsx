@@ -16,6 +16,7 @@ export default function Minesweeper() {
   const [won, setWon] = useState(false);
   const [flagMode, setFlagMode] = useState(false); // Mobile flagging toggle
   const [flagCount, setFlagCount] = useState(0);
+  const [gameState, setGameState] = useState('lobby'); // 'lobby' or 'playing'
 
   // Timer
   const [seconds, setSeconds] = useState(0);
@@ -227,34 +228,37 @@ export default function Minesweeper() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  return (
-    <div className="game-container">
-      <div className="game-header">
-        <div className="game-title-area">
-          <h2>Minesweeper</h2>
-          <div className="game-meta-tags">
-            <span className="meta-tag category">Puzzle</span>
-            <span className="meta-tag difficulty">Hard</span>
+  if (gameState === 'lobby') {
+    return (
+      <div className="game-container">
+        <div className="game-header">
+          <div className="game-title-area">
+            <h2>Minesweeper</h2>
+            <div className="game-meta-tags">
+              <span className="meta-tag category">Puzzle</span>
+              <span className="meta-tag difficulty">Adaptive</span>
+            </div>
           </div>
         </div>
-        <div className="game-controls-area">
-          <button className="btn btn-primary" onClick={initBoard}>
-            Restart Game
-          </button>
-        </div>
-      </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem', justifyContent: 'center', margin: '2rem 0' }}>
-        {/* Configurations & Scoreboard */}
-        <div style={{
-          flex: '1 1 300px', maxWidth: '350px', display: 'flex', flexDirection: 'column', gap: '1.25rem',
-          background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-          padding: '1.5rem'
-        }}>
-          <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Setup</h3>
-          
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Difficulty</label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+          {/* Rules */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Uncover all safety blocks without triggering any hidden mines. Numbers on revealed blocks show how many mines are adjacent. Plant flags on suspected mine locations!
+            </p>
+          </div>
+
+          {/* Difficulty Selection */}
+          <div style={{
+            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
+            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem'
+          }}>
+            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Difficulty Preset</h3>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {Object.keys(PRESETS).map(key => (
                 <button 
@@ -269,44 +273,56 @@ export default function Minesweeper() {
             </div>
           </div>
 
-          {/* Flag Mode for Mobile */}
-          <div>
-            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Click Behavior (Mobile)</label>
-            <button 
-              className={`btn ${flagMode ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ width: '100%', padding: '0.5rem', gap: '0.5rem', fontSize: '0.85rem' }}
-              onClick={() => setFlagMode(!flagMode)}
-            >
-              <i className="fa-solid fa-flag"></i> {flagMode ? 'Mode: Place Flags' : 'Mode: Reveal Tiles'}
-            </button>
-          </div>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => { initBoard(); setGameState('playing'); }} 
+            style={{ padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}
+          >
+            START PLAYING
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-          {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', textAlign: 'center', marginTop: '0.5rem' }}>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Mines Remaining</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-red)' }}>{Math.max(0, mines - flagCount)}</div>
-            </div>
-            <div className="snake-stat-box">
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Time</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-pink)' }}>{formatTime(seconds)}</div>
-            </div>
+  return (
+    <div className="game-container">
+      {/* Top Navbar */}
+      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+        <button className="btn btn-secondary" onClick={() => { setTimerActive(false); setGameState('lobby'); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-arrow-left" /> Menu
+        </button>
+        
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            💣 <span style={{ fontWeight: 800, color: 'var(--accent-red)' }}>{Math.max(0, mines - flagCount)}</span>
           </div>
-
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            <h4 style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>Rules:</h4>
-            <p>🖱️ **Left Click** (or tap in Reveal mode) to sweep tiles.</p>
-            <p>🚩 **Right Click** (or tap in Flag mode) to plant a warning flag.</p>
-            <p>💥 Uncover all safety blocks without hitting any mines to win!</p>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            ⏱️ <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{formatTime(seconds)}</span>
           </div>
         </div>
 
+        <button className="btn btn-secondary" onClick={initBoard} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+          <i className="fa-solid fa-rotate-right" /> Restart
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '1.5rem auto 0', width: '100%' }}>
+        {/* Flag Mode for Mobile (places warning flags on touch tap) */}
+        <button 
+          className={`btn ${flagMode ? 'btn-primary' : 'btn-secondary'}`}
+          style={{ width: '100%', maxWidth: '280px', padding: '0.4rem 1rem', gap: '0.5rem', fontSize: '0.85rem', marginBottom: '1.5rem' }}
+          onClick={() => setFlagMode(!flagMode)}
+        >
+          <i className="fa-solid fa-flag"></i> {flagMode ? 'Mode: Place Flags' : 'Mode: Reveal Tiles'}
+        </button>
+
         {/* Minesweeper Grid Board */}
-        <div className="minesweeper-wrapper" style={{ flex: '1 1 auto', overflow: 'hidden' }}>
+        <div className="minesweeper-wrapper" style={{ overflow: 'auto', maxWidth: '100%' }}>
           <div className="minesweeper-board-outer" style={{ position: 'relative' }}>
             <div 
               className="minesweeper-grid" 
-              style={{ gridTemplateColumns: `repeat(${cols}, 32px)` }}
+              style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
             >
               {grid.map((row) =>
                 row.map((cell) => {
@@ -346,25 +362,39 @@ export default function Minesweeper() {
 
             {/* Game Over Overlay */}
             {gameOver && (
-              <div className="snake-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 'var(--radius-lg)' }}>
+              <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
                 <i className="fa-solid fa-burst" style={{ fontSize: '3rem', color: 'var(--accent-red)', textShadow: '0 0 15px rgba(239, 68, 68, 0.4)' }} />
-                <h2 style={{ color: 'var(--accent-red)' }}>Boom! Game Over</h2>
-                <p style={{ color: 'var(--text-secondary)' }}>You swept the grid for {formatTime(seconds)}, but hit a mine.</p>
-                <button className="btn btn-primary" onClick={initBoard}>
-                  Try Again
-                </button>
+                <h2 style={{ color: 'var(--accent-red)' }}>Game Over</h2>
+                <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+                  Hit a mine after {formatTime(seconds)}.
+                </p>
+                <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+                  <button className="btn btn-primary" onClick={initBoard} style={{ flex: 1 }}>
+                    Try Again
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ flex: 1 }}>
+                    Lobby
+                  </button>
+                </div>
               </div>
             )}
 
             {/* Game Won Overlay */}
             {won && (
-              <div className="snake-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 'var(--radius-lg)' }}>
+              <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
                 <i className="fa-solid fa-medal" style={{ fontSize: '3rem', color: 'var(--accent-green)', textShadow: '0 0 15px rgba(16, 185, 129, 0.4)' }} />
                 <h2 style={{ color: 'var(--accent-green)' }}>Victory Achieved!</h2>
-                <p style={{ color: 'var(--text-secondary)' }}>Successfully cleared all safe cells in <strong>{formatTime(seconds)}</strong>!</p>
-                <button className="btn btn-primary" onClick={initBoard}>
-                  Play Again
-                </button>
+                <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+                  Successfully cleared in <strong>{formatTime(seconds)}</strong>!
+                </p>
+                <div style={{ display: 'flex', gap: '0.5rem', width: '100%', marginTop: '1rem' }}>
+                  <button className="btn btn-primary" onClick={initBoard} style={{ flex: 1 }}>
+                    Play Again
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ flex: 1 }}>
+                    Lobby
+                  </button>
+                </div>
               </div>
             )}
           </div>
