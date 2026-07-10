@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const WINNING_COMBOS = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -265,21 +266,19 @@ export default function TicTacToe() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => setGameState('lobby')} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '0.75rem', fontSize: '0.85rem', fontWeight: 700 }}>
-          <span style={{ color: 'var(--accent-cyan)' }}>X: {scores.x}</span>
-          <span style={{ color: 'var(--text-muted)' }}>Ties: {scores.ties}</span>
-          <span style={{ color: 'var(--accent-pink)' }}>O: {scores.o}</span>
-        </div>
-
-        <button className="btn btn-secondary" onClick={handleReset} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => setGameState('lobby')}
+        stats={[
+          { label: 'X', value: scores.x, color: 'var(--accent-cyan)' },
+          { label: 'Ties', value: scores.ties, color: 'var(--text-muted)' },
+          { label: 'O', value: scores.o, color: 'var(--accent-pink)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={handleReset} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '2rem auto 0', maxWidth: '360px', width: '100%', position: 'relative' }}>
         {/* Active Turn Status bar */}
@@ -314,7 +313,7 @@ export default function TicTacToe() {
 
         {/* Game Over modal overlay */}
         {winner && (
-          <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+          <div className="game-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
             {winner === 'Tie' ? (
               <>
                 <i className="fa-solid fa-handshake" style={{ fontSize: '3rem', color: 'var(--text-secondary)' }} />

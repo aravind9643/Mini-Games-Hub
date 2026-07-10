@@ -13,13 +13,11 @@ export default function GameHeader({ onMenu, stats = [], actions }) {
       <button className="btn btn-secondary" onClick={onMenu}>
         <i className="fa-solid fa-arrow-left" /> Menu
       </button>
-
       <div className="stat-strip">
         {stats.map(stat => (
           <StatPill key={stat.label} {...stat} />
         ))}
       </div>
-
       {actions}
     </div>
   );

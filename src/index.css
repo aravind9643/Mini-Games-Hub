@@ -954,7 +954,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---- Shared win/lose/pause overlay (formerly "snake-overlay") ---- */
-.game-overlay {
+.game-overlay,
+.snake-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -974,7 +975,8 @@ h1, h2, h3, h4, h5, h6 {
   padding: 1.5rem;
 }
 
-.game-overlay h2, .game-overlay h3 {
+.game-overlay h2, .game-overlay h3,
+.snake-overlay h2, .snake-overlay h3 {
   font-size: 1.75rem;
   text-shadow: 0 0 16px currentColor;
 }
@@ -1089,33 +1091,6 @@ h1, h2, h3, h4, h5, h6 {
   height: auto;
   max-width: 400px;
   aspect-ratio: 1;
-}
-
-/* .snake-overlay is an alias of .game-overlay, kept for pages not yet migrated */
-.snake-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(4, 3, 10, 0.78);
-  backdrop-filter: blur(10px) saturate(140%);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  color: #fff;
-  z-index: 10;
-  text-align: center;
-  padding: 1.5rem;
-}
-
-.snake-overlay h3 {
-  font-size: 2rem;
-  color: var(--accent-red);
-  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
 }
 
 /* 3. 2048 Game */

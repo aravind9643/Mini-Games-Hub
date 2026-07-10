@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import GameHeader from '../components/GameHeader';
 
 const PRESETS = {
   easy: { rows: 9, cols: 9, mines: 10 },
@@ -316,24 +317,18 @@ export default function Minesweeper() {
   return (
     <div className="game-container">
       {/* Top Navbar */}
-      <div className="game-header" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-        <button className="btn btn-secondary" onClick={() => { setTimerActive(false); setGameState('lobby'); }} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-arrow-left" /> Menu
-        </button>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            💣 <span style={{ fontWeight: 800, color: 'var(--accent-red)' }}>{Math.max(0, mines - flagCount)}</span>
-          </div>
-          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-            ⏱️ <span style={{ fontWeight: 800, color: 'var(--accent-pink)' }}>{formatTime(seconds)}</span>
-          </div>
-        </div>
-
-        <button className="btn btn-secondary" onClick={initBoard} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-          <i className="fa-solid fa-rotate-right" /> Restart
-        </button>
-      </div>
+      <GameHeader
+        onMenu={() => { setTimerActive(false); setGameState('lobby'); }}
+        stats={[
+          { label: '💣', value: Math.max(0, mines - flagCount), color: 'var(--accent-red)' },
+          { label: '⏱️', value: formatTime(seconds), color: 'var(--accent-pink)' }
+        ]}
+        actions={
+          <button className="btn btn-secondary" onClick={initBoard} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
+            <i className="fa-solid fa-rotate-right" /> Restart
+          </button>
+        }
+      />
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '1.5rem auto 0', width: '100%' }}>
         {/* Flag Mode for Mobile (places warning flags on touch tap) */}
@@ -397,7 +392,7 @@ export default function Minesweeper() {
 
             {/* Game Over Overlay */}
             {gameOver && (
-              <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+              <div className="game-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
                 <i className="fa-solid fa-burst" style={{ fontSize: '3rem', color: 'var(--accent-red)', textShadow: '0 0 15px rgba(239, 68, 68, 0.4)' }} />
                 <h2 style={{ color: 'var(--accent-red)' }}>Game Over</h2>
                 <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
@@ -416,7 +411,7 @@ export default function Minesweeper() {
 
             {/* Game Won Overlay */}
             {won && (
-              <div className="snake-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
+              <div className="game-overlay" style={{ borderRadius: 'var(--radius-lg)' }}>
                 <i className="fa-solid fa-medal" style={{ fontSize: '3rem', color: 'var(--accent-green)', textShadow: '0 0 15px rgba(16, 185, 129, 0.4)' }} />
                 <h2 style={{ color: 'var(--accent-green)' }}>Victory Achieved!</h2>
                 <p style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
