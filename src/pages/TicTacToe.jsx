@@ -176,24 +176,18 @@ export default function TicTacToe() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+        <div className="lobby-stack">
           {/* Rules */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+          <div className="info-panel">
+            <h3>How to Play</h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Challenge a friend locally or take on an unbeatable Minimax AI agent. Take turns marking X or O on a 3x3 grid. Connect three in a row to win!
             </p>
           </div>
 
           {/* Setup Options */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Setup</h3>
+          <div className="info-panel" style={{ gap: '1.25rem' }}>
+            <h3>Game Setup</h3>
             
             <div>
               <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.4rem' }}>Game Mode</label>
@@ -239,21 +233,18 @@ export default function TicTacToe() {
           </div>
 
           {/* Scores */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Current Scoreboard</h3>
+          <div className="info-panel" style={{ gap: '0.75rem' }}>
+            <h3>Current Scoreboard</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
-              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '0.5rem' }}>
+              <div className="stat-box">
                 <div style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)' }}>Player X</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{scores.x}</div>
               </div>
-              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '0.5rem' }}>
+              <div className="stat-box">
                 <div style={{ fontSize: '0.75rem', color: 'var(--accent-pink)' }}>{gameMode === 'computer' ? 'Computer O' : 'Player O'}</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{scores.o}</div>
               </div>
-              <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', padding: '0.5rem' }}>
+              <div className="stat-box">
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Ties</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{scores.ties}</div>
               </div>

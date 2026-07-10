@@ -222,6 +222,40 @@ export default function Minesweeper() {
     }
   };
 
+  // Long-press to flag on touch devices (mirrors desktop right-click)
+  const longPressTimer = useRef(null);
+  const longPressTriggered = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    };
+  }, []);
+
+  const startLongPress = (r, c) => {
+    longPressTriggered.current = false;
+    longPressTimer.current = setTimeout(() => {
+      longPressTriggered.current = true;
+      handleFlag(null, r, c);
+      if (navigator.vibrate) navigator.vibrate(15);
+    }, 450);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleCellClickGuarded = (r, c) => {
+    if (longPressTriggered.current) {
+      longPressTriggered.current = false;
+      return;
+    }
+    handleCellClick(r, c);
+  };
+
   const formatTime = (timeInSecs) => {
     const mins = Math.floor(timeInSecs / 60);
     const secs = timeInSecs % 60;
@@ -241,24 +275,18 @@ export default function Minesweeper() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+        <div className="lobby-stack">
           {/* Rules */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+          <div className="info-panel">
+            <h3>How to Play</h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Uncover all safety blocks without triggering any hidden mines. Numbers on revealed blocks show how many mines are adjacent. Plant flags on suspected mine locations!
             </p>
           </div>
 
           {/* Difficulty Selection */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Difficulty Preset</h3>
+          <div className="info-panel" style={{ gap: '0.75rem' }}>
+            <h3>Difficulty Preset</h3>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {Object.keys(PRESETS).map(key => (
                 <button 
@@ -316,6 +344,9 @@ export default function Minesweeper() {
         >
           <i className="fa-solid fa-flag"></i> {flagMode ? 'Mode: Place Flags' : 'Mode: Reveal Tiles'}
         </button>
+        <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '-1.1rem', marginBottom: '1rem', textAlign: 'center' }}>
+          Tip: long-press or right-click a tile to flag it directly.
+        </p>
 
         {/* Minesweeper Grid Board */}
         <div className="minesweeper-wrapper" style={{ overflow: 'auto', maxWidth: '100%' }}>
@@ -349,9 +380,13 @@ export default function Minesweeper() {
                     <button
                       key={`${cell.r}-${cell.c}`}
                       className={cellClass}
-                      onClick={() => handleCellClick(cell.r, cell.c)}
+                      onClick={() => handleCellClickGuarded(cell.r, cell.c)}
                       onContextMenu={(e) => handleFlag(e, cell.r, cell.c)}
-                      aria-label={`Cell at row ${cell.r + 1}, column ${cell.c + 1}`}
+                      onTouchStart={() => startLongPress(cell.r, cell.c)}
+                      onTouchEnd={cancelLongPress}
+                      onTouchMove={cancelLongPress}
+                      onTouchCancel={cancelLongPress}
+                      aria-label={`Cell at row ${cell.r + 1}, column ${cell.c + 1}${cell.isFlagged ? ', flagged' : ''}${cell.isRevealed ? ', revealed' : ''}`}
                     >
                       {cellContent}
                     </button>

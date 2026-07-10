@@ -96,13 +96,10 @@ export default function RPSLS() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+        <div className="lobby-stack">
           {/* Rules */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Game Rules</h3>
+          <div className="info-panel">
+            <h3>Game Rules</h3>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6, maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
               <p>✂️ **Scissors** cuts Paper & decapitates Lizard</p>
               <p>📄 **Paper** covers Rock & disproves Spock</p>
@@ -192,31 +189,12 @@ export default function RPSLS() {
         {/* Option Selector List */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', width: '100%' }}>
           {CHOICES.map(c => (
-            <button 
+            <button
               key={c.id}
+              className="rpsls-choice-btn"
               onClick={() => makeChoice(c.id)}
-              style={{
-                flex: 1,
-                height: '60px',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-primary)',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '4px',
-                transition: 'all 0.15s ease-in-out'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = c.color;
-                e.currentTarget.style.boxShadow = `0 0 10px ${c.color}`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'var(--border-color)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+              style={{ '--choice-color': c.color }}
+              aria-label={`Choose ${c.name}`}
             >
               <span style={{ fontSize: '1.4rem' }}>{c.icon}</span>
               <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: 700 }}>{c.name}</span>

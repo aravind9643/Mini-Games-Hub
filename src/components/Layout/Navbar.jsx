@@ -114,7 +114,13 @@ export default function Navbar({ onMenuToggle }) {
       </div>
 
       <div className="navbar-actions">
-        <button className="navbar-action-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'} style={{ border: 'none', outline: 'none' }}>
+        <button
+          className="navbar-action-btn"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          style={{ border: 'none', outline: 'none' }}
+        >
           {theme === 'dark' ? <i className="fa-solid fa-sun"></i> : <i className="fa-solid fa-moon"></i>}
         </button>
       </div>

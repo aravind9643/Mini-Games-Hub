@@ -116,24 +116,18 @@ export default function WhackAMole() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+        <div className="lobby-stack">
           {/* Rules */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+          <div className="info-panel">
+            <h3>How to Play</h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Tap the Mole (🐹) as soon as it pops out of a hole. Whacking a mole increases score and accelerates game speed. Be careful: hitting an empty hole will subtract 1 point! Hit as many as you can within 30 seconds.
             </p>
           </div>
 
           {/* Scores */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+          <div className="info-panel" style={{ gap: '1rem', textAlign: 'center' }}>
+            <h3 style={{ textAlign: 'left' }}>Performance</h3>
             <div className="snake-stat-box">
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Best Score</div>
               <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>{highScore} hits</div>

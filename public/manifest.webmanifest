@@ -1,0 +1,19 @@
+{
+  "name": "Games Hub — Premium Web Mini Games",
+  "short_name": "Games Hub",
+  "description": "Sleek, glassmorphic online mini-games running in your browser. 100% free with no sign-up.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#050816",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

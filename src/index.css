@@ -3,7 +3,7 @@
    Dark Glassmorphism + Neon Accents
    ======================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+/* Fonts are loaded non-blocking via <link> tags in index.html */
 
 /* ---- CSS Variables ---- */
 :root {
@@ -1096,6 +1096,33 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
 }
 
+/* RPSLS choice buttons */
+.rpsls-choice-btn {
+  flex: 1;
+  height: 60px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease-in-out;
+}
+
+.rpsls-choice-btn:hover,
+.rpsls-choice-btn:focus-visible,
+.rpsls-choice-btn:active {
+  border-color: var(--choice-color, var(--accent-purple));
+  box-shadow: 0 0 10px var(--choice-color, var(--accent-purple));
+}
+
+.rpsls-choice-btn:active {
+  transform: scale(0.95);
+}
+
 /* 5. Minesweeper */
 .minesweeper-wrapper {
   display: flex;
@@ -1162,6 +1189,40 @@ h1, h2, h3, h4, h5, h6 {
 .minesweeper-cell.count-6 { color: #06b6d4; }
 .minesweeper-cell.count-7 { color: #ec4899; }
 .minesweeper-cell.count-8 { color: #14b8a6; }
+
+/* ---- Shared Game Lobby / Panel Patterns ---- */
+.lobby-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 400px;
+  margin: 2rem auto 0;
+  width: 100%;
+}
+
+.info-panel {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-panel h3 {
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.stat-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+  text-align: center;
+}
 
 /* ---- Route Loader Spinner ---- */
 .route-loading {

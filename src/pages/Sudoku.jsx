@@ -194,24 +194,18 @@ export default function Sudoku() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+        <div className="lobby-stack">
           {/* Rules */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+          <div className="info-panel">
+            <h3>How to Play</h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Fill the 9x9 grid so that every row, column, and 3x3 block contains digits from 1 to 9 without repetition. Tap cells to highlight them, toggle Note Mode to scribble notes, and enter numbers.
             </p>
           </div>
 
           {/* Difficulty Preset */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>Difficulty</h3>
+          <div className="info-panel" style={{ gap: '0.75rem' }}>
+            <h3>Difficulty</h3>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {['Easy', 'Medium', 'Hard'].map(diff => (
                 <button 

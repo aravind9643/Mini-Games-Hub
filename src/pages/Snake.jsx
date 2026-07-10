@@ -252,24 +252,18 @@ export default function Snake() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '400px', margin: '2rem auto 0', width: '100%' }}>
+        <div className="lobby-stack">
           {/* Rules */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>How to Play</h3>
+          <div className="info-panel">
+            <h3>How to Play</h3>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Use Arrow Keys or WASD to change the snake direction. Consume glowing food cells to grow and increase your score, but avoid crashing into outer walls or your own tail.
             </p>
           </div>
 
           {/* Scores */}
-          <div style={{
-            background: 'var(--bg-primary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)',
-            padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'center'
-          }}>
-            <h3 style={{ fontSize: '1.1rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem', textAlign: 'left' }}>Performance</h3>
+          <div className="info-panel" style={{ gap: '1rem', textAlign: 'center' }}>
+            <h3 style={{ textAlign: 'left' }}>Performance</h3>
             <div className="snake-stat-box">
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>High Score</div>
               <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-green)' }}>{highScore} 🍎</div>
